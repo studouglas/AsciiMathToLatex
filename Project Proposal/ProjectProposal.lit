@@ -1,0 +1,16 @@
+@code_type Swift .swift
+@comment_type /* %s */
+@compiler swiftc
+@add_css literature_style_override.css
+
+@title AsciiMath to Latex - Project Proposal<br><span class="subtitle">Stuart Douglas - 1214422<br>March 2nd, 2016</span>
+
+@s Overview
+
+@s Motivation
+
+@s Background
+
+@s Tools and Languages
+
+@s Conclusion

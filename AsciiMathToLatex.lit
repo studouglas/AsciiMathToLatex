@@ -1,0 +1,23 @@
+@title Hello world in Swift
+
+@s Introduction
+
+This is an example hello world program.
+We can define codeblocks with `---`
+
+--- main.swift
+@{Imports}
+@{Print a string}
+---
+
+Now we can define the `Imports` codeblock:
+
+--- Imports
+import Foundation
+---
+
+Finally, our program needs to print "hello world"
+
+--- Print a string
+println("hello world")
+---

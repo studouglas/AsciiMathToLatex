@@ -1,0 +1,14 @@
+ body {
+	font-family: Helvetica, sans-serif;
+}
+
+p {
+	text-indent: 0!important;
+	margin-bottom: 1em!important;;
+}
+
+.subtitle {
+	font-weight: 400;
+	font-size: 22px;
+}
+

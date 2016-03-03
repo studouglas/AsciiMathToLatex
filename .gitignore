@@ -21,3 +21,8 @@ xcuserdata/
 *.moved-aside
 *.xccheckout
 *.xcscmblueprint
+
+# Latex
+*.log
+*.aux
+*.toc

@@ -6,11 +6,106 @@
 @title AsciiMath to Latex - Project Proposal<br><span class="subtitle">Stuart Douglas - 1214422<br>March 2nd, 2016</span>
 
 @s Overview
+The proposed project will take as input a math equation written in [AsciiMath](http://asciimath.org)
+and convert it into valid LaTeX source. The tool will first lex the AsciiMath input, outputting syntax errors 
+as they are encountered and attempting to fix them if possible, and exiting the program if not. If no fatal 
+errors are encountered, it will then generate an AST representing the equation, and will verify its 
+correctness. Finally the AST will be converted into LaTeX source math notation.
+
+The purpose of the project is to allow for a simpler, more legible syntax for math equations to be used with 
+the superior typesetting abilities of LaTeX. Initially, a command-line tool will be created to perform this 
+task. In the future a LaTeX package will be created that supports math input using AsciiMath. Additionally, 
+an Automator service for OS X users will be created that takes an AsciiMath equation as input and will 
+convert it into LaTeX and pass it to the [LaTeXiT](http://www.chachatelier.fr/latexit/) service, allowing 
+users to quickly generate a typeset equation for inclusion in a wide variety of documents.
 
 @s Motivation
+In terms of formatting, LaTeX is unparalleled for complex math equations. As such, it has become the industry 
+standard and is widely used and supported throughout academia and in math-related fields, such as computer 
+science. Personally, I've been using LaTeX for several years and continue to use it to format math equations 
+and to take notes.
+
+However, the syntax to write these math equations is verbose, difficult-to-read, and slow to type. AsciiMath is
+a language that implements a subset of LaTeX's math functionality and is used for displaying math equations in
+HTML documents. It uses a much simpler syntax that prefers spaces and parentheses over braces and 
+backslashes and saves the user keystrokes by requiring less explicit instructions.
 
 @s Background
+Currently, there 
+
+@s Example of Equations in AsciiMath and LaTeX
+Take the following simple equation:<br>
+<span class="center">$\sum_{i=1}^n i^3 = \left(\frac{n(n+1)}{2}\right)^2$</span>
+
+In LaTeX, we write the equation as:
+<span class="center">
+--- Simple equation in LaTeX
+\sum_{i=1}^n i^3 = \left(\frac{n(n+1)}{2}\right)^2
+---
+</span>
+
+Whereas in AsciiMath, we write:
+<span class="center">
+--- Simple equation in AsciiMath
+sum_(i=1)^n i^3=((n(n+1))/2)^2
+---
+</span>
+
+The AsciiMath version has significantly less characters than in LaTeX (30 vs 50), and appears much closer to 
+how one would naturally express the equation using a keyboard. In addition, the lack of curly braces makes it much 
+easier to read and type.
+
+Matrices in AsciiMath are even simpler, we can represent the following $2 \times 2$ matrix in just a few 
+characters:<br>
+<span class="center">$\left[\begin{array}{cc}a & b\\c & d\end{array}\right]$</span>
+
+In LaTeX, we write the equation as:
+<span class="center">
+--- Simple matrix in LaTeX
+\left[
+\begin{array}{cc}
+a & b\\
+c & d
+\end{array}
+\right]
+---
+</span>
+
+Whereas in AsciiMath, we simply write:
+<span class="center">
+--- Simple matrix in AsciiMath
+[[a,b],[c,d]]
+---
+</span>
+
+There are numerous other examples that illustrate the improved syntax of AsciiMath, more information can be found at the 
+[AsciiMath](http://asciimath.org) homepage.
 
 @s Tools and Languages
+The compiler will be developed in the literate programming style using the [Literate](http://literate.zbyedidia
+.webfactional.com/index.php) tool. This document was generated using Literate, which takes a markdown 
+text file as input and generates both an html document and a source code file from that. After researching 
+several language-agnostic literate programming tools, I chose Literate due to its support for inline math 
+equations, its simple interface, and its ability to generate multiple source code files from one .lit file.
 
-@s Conclusion
+The language that will be used for the compiler is Swift, a modern object-oriented programming language with 
+some functional aspects. Swift was chosen for a variety of reasons, including my experience with it, its 
+strong typing system, and its speed.
+
+@s Resources
+The core resource for AsciiMath is their [homepage](http://asciimath.org), where a formal definition of the grammar
+is presented along with a listing of all possible commands. For Literate, the 
+[user manual](http://literate.zbyedidia.webfactional.com/manual.php) will be the main resource used.
+
+In terms of the actual compiler, Dr. Sekerinski's Pascal0 compiler will be referred to throughout development. It will
+mainly be used as a template for the high-level design, but if any specific code is used then it will be documented 
+in the source.
+
+Other references used will be the [Swift Programming Language](https://swift.org/documentation/) ebook, and [Modern Compiler
+Design](http://link.springer.com/book/10.1007%2F978-1-4614-4699-6). All sources will be cited when used.
+
+@s Testing
+A tool to convert AsciiMath into an image file can be found at [AsciiMath](http://asciimath.org). Testing will primarily
+be done by entering an AsciiMath equation into this tool and manually verifying that the output image is the same as the 
+typeset LaTeX equation from the generated LaTeX source.
+

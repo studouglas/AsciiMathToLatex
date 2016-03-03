@@ -7,8 +7,17 @@ p {
 	margin-bottom: 1em!important;;
 }
 
+h4 {
+	font-size: 20px;
+}
+
 .subtitle {
 	font-weight: 400;
 	font-size: 22px;
 }
 
+.center {
+	text-align: center;
+	margin: 0 auto;
+	display: block;
+}

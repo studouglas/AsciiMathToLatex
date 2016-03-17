@@ -1,23 +1,57 @@
-@title Hello world in Swift
+@title AsciiMath to LaTeX in Swift
 
 @s Introduction
+**intro here**
 
-This is an example hello world program.
-We can define codeblocks with `---`
-
+The entry point to the program, our main file will take in the input equation, and initiate the
+classes to lex, parse, and convert it.
 --- main.swift
 @{Imports}
-@{Print a string}
+@{Read input}
 ---
 
-Now we can define the `Imports` codeblock:
-
+We will need the core functionality of Foundation for string processing and reading from stdin.
 --- Imports
 import Foundation
 ---
 
-Finally, our program needs to print "hello world"
+Read the equation from stdin and save it.
+--- Read input
+println("Processing input...")
+let stdin = NSFileHandle.fileHandleWithStandardInput()
+let inputData = stdin.availableData;
+@{Check input}
+@{Parse input}
+@{Print output}
+---
 
---- Print a string
-println("hello world")
+Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
+user and exit if no input was passed.
+--- Check input
+let rawInputText = NSString(data: inputData, encoding: NSUTF8StringEncoding)
+if (rawInputText == nil) {
+    println("Usage: 'echo 'x + y' | ./main")
+    exit(1)
+}
+
+let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+println("AsciiMath Equation: '\(asciiMathText)'")
+---
+
+At this point, our input equation is ready for our lexing and parsing operations. 
+Firstly, we create a new parser object.
+--- Parse input
+let parser = Parser(amEquation: asciiMathText)
+if !parser.parseInput() {
+	println(parser.errorMessage)
+	exit(2)
+}
+println("Parsed input successfully!")
+---
+
+Once the input's been parsed and an AST has been generated, convert to LaTeX and print it out.
+--- Print output
+let latexOutput = parser.convertToLatex()
+println("LaTeX output:")
+println(latexOutput)
 ---

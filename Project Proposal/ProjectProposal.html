@@ -69,26 +69,23 @@ h4 {
 <section>
 <h1>AsciiMath to Latex - Project Proposal<br><span class="subtitle">Stuart Douglas - 1214422<br>March 2nd, 2016</span></h1>
 <a name="1:1"><div class="section"><h4>1. Overview</h4></a>
-<p>The proposed project will take as input a math equation written in <a href="http://asciimath.org">AsciiMath</a>
-and convert it into valid LaTeX source. The tool will first lex the AsciiMath input, outputting syntax errors 
-as they are encountered and attempting to fix them if possible, and exiting the program if not. If no fatal 
-errors are encountered, it will then generate an AST representing the equation, and will verify its 
-correctness. Finally the AST will be converted into LaTeX source math notation.
+<p>The proposed project takes a math equation written in <a href="http://asciimath.org">AsciiMath</a>
+as input and converts it into valid LaTeX source. The tool first lexes the AsciiMath input, outputting syntax errors 
+as they are encountered. It then generates an AST representing the equation which is converted into LaTeX math notation and output as text.
 </p>
-<p>The purpose of the project is to allow for a simpler, more legible syntax for math equations to be used with 
+<p>The purpose of the project is to allow for a simpler, more readable syntax for math equations to be used with 
 the superior typesetting abilities of LaTeX. Initially, a command-line tool will be created to perform this 
-task. In the future a LaTeX package will be created that supports math input using AsciiMath. Additionally, 
-an Automator service for OS X users will be created that takes an AsciiMath equation as input and will 
-convert it into LaTeX and pass it to the <a href="http://www.chachatelier.fr/latexit/">LaTeXiT</a> service, allowing 
-users to quickly generate a typeset equation for inclusion in a wide variety of documents.
+task. In the future, a LaTeX package will potentially be made that supports math input using AsciiMath. Additionally, 
+an Automator service for OS X users will be created that takes an AsciiMath equation as input, 
+converts it into LaTeX, and passes it to the <a href="http://www.chachatelier.fr/latexit/">LaTeXiT</a> service. This will allow 
+users to quickly generate a well-typeset equation for inclusion in a wide variety of documents.
 </p>
 
 </div>
 <a name="1:2"><div class="section"><h4>2. Motivation</h4></a>
 <p>In terms of formatting, LaTeX is unparalleled for complex math equations. As such, it has become the industry 
-standard and is widely used and supported throughout academia and in math-related fields, such as computer 
-science. Personally, I've been using LaTeX for several years and continue to use it to format math equations 
-and to take notes.
+standard and is widely used and supported throughout academia and in math-related fields. Personally, I've
+been using LaTeX for several years and continue to use it to format math equations and take notes.
 </p>
 <p>However, the syntax to write these math equations is verbose, difficult-to-read, and slow to type. AsciiMath is
 a language that implements a subset of LaTeX's math functionality and is used for displaying math equations in
@@ -98,6 +95,15 @@ backslashes and saves the user keystrokes by requiring less explicit instruction
 
 </div>
 <a name="1:3"><div class="section"><h4>3. Background</h4></a>
+<p>AsciiMath was developed in 2007 to allow users to generate MathML code (a language for writing math equations on the web) 
+with a simple, linear syntax <a href="https://www.heacademy.ac.uk/asciimathml-now-everyone-can-type-mathml">[1]</a>. AsciiMath is 
+integrated with <a href="https://www.mathjax.org/#features">MathJax</a>, a popular javascript library for typesetting math which also 
+supports LaTeX input.
+</p>
+<p>There are currently no available tools to convert text from the AsciiMath format to LaTeX. It is my hope that this project
+will help other students and LaTeX users write beautiful formulae quickly and with little prior knowledge.
+</p>
+
 </div>
 <a name="1:4"><div class="section"><h4>4. Example of Equations in AsciiMath and LaTeX</h4></a>
 <p>Take the following simple equation:<br>
@@ -133,11 +139,11 @@ sum_(i=1)^n i^3=((n(n+1))/2)^2
 </div>
 <p></span>
 </p>
-<p>The AsciiMath version has significantly less characters than in LaTeX (30 vs 50), and appears much closer to 
+<p>The AsciiMath version has significantly fewer characters than in LaTeX (30 vs. 50) and appears much closer to 
 how one would naturally express the equation using a keyboard. In addition, the lack of curly braces makes it much 
 easier to read and type.
 </p>
-<p>Matrices in AsciiMath are even simpler, we can represent the following <span class="math">2 \times 2</span> matrix in just a few 
+<p>Matrices in AsciiMath are even simpler; we can represent the following <span class="math">2 \times 2</span> matrix in just a few 
 characters:<br>
 <span class="center"><span class="math">\left[\begin{array}{cc}a & b\\c & d\end{array}\right]</span></span>
 </p>
@@ -176,41 +182,45 @@ c &amp; d
 </div>
 <p></span>
 </p>
-<p>There are numerous other examples that illustrate the improved syntax of AsciiMath, more information can be found at the 
+<p>There are numerous other examples that illustrate the improved syntax of AsciiMath; more information can be found at the 
 <a href="http://asciimath.org">AsciiMath</a> homepage.
 </p>
 
 </div>
 <a name="1:5"><div class="section"><h4>5. Tools and Languages</h4></a>
-<p>The compiler will be developed in the literate programming style using the <a href="http://literate.zbyedidia&#10;.webfactional.com/index.php">Literate</a> tool. This document was generated using Literate, which takes a markdown 
-text file as input and generates both an html document and a source code file from that. After researching 
+<p>The project will be developed in the literate programming style using the <a href="http://literate.zbyedidia&#10;.webfactional.com/index.php">Literate</a> tool. This document was generated using Literate, which takes a markdown 
+text file as input and generates both an HTML document and a source code file. After researching 
 several language-agnostic literate programming tools, I chose Literate due to its support for inline math 
 equations, its simple interface, and its ability to generate multiple source code files from one .lit file.
 </p>
-<p>The language that will be used for the compiler is Swift, a modern object-oriented programming language with 
+<p>The compiler will be written in Swift, a modern object-oriented programming language with 
 some functional aspects. Swift was chosen for a variety of reasons, including my experience with it, its 
-strong typing system, and its speed.
+strong focus on safety, and its speed.
 </p>
 
 </div>
 <a name="1:6"><div class="section"><h4>6. Resources</h4></a>
 <p>The core resource for AsciiMath is their <a href="http://asciimath.org">homepage</a>, where a formal definition of the grammar
 is presented along with a listing of all possible commands. For Literate, the 
-<a href="http://literate.zbyedidia.webfactional.com/manual.php">user manual</a> will be the main resource used.
+<a href="http://literate.zbyedidia.webfactional.com/manual.php">user manual</a> will be the primary resource used.
 </p>
-<p>In terms of the actual compiler, Dr. Sekerinski's Pascal0 compiler will be referred to throughout development. It will
-mainly be used as a template for the high-level design, but if any specific code is used then it will be documented 
-in the source.
+<p>Dr. Sekerinski's Pascal0 compiler will be referred to throughout development of the compiler. It will
+mainly be used to guide the high-level design of the compiler.
 </p>
-<p>Other references used will be the <a href="https://swift.org/documentation/">Swift Programming Language</a> ebook, and <a href="http://link.springer.com/book/10.1007%2F978-1-4614-4699-6">Modern Compiler
-Design</a>.
+<p>Other references used will be the <a href="https://swift.org/documentation/">Swift Programming Language</a> eBook, and <a href="http://link.springer.com/book/10.1007%2F978-1-4614-4699-6">Modern Compiler
+Design</a>. All sources will be cited when used.
 </p>
 
 </div>
 <a name="1:7"><div class="section"><h4>7. Testing</h4></a>
-<p>A tool to convert AsciiMath into an image file can be found at <a href="http://asciimath.org">AsciiMath</a>. Testing will primarily
-be done by entering the AsciiMath into the website and manually verifying that the output image is the same as the 
-typeset LaTeX equation from the generated LaTeX source.
+<p>The majority of testing will be done in a black-box fashion. A script will be created that compiles a variety of AsciiMath formulae to LaTeX
+source and compares the results with the correct LaTeX code.
+</p>
+<p>To generate the formulae and their corresponding AsciiMath and LaTeX representations for these examples, MathJax will be used.
+MathJax is an open-source javascript library for typesetting math equations on the web, supporting input in both LaTeX and 
+AsciiMath. The <a href="https://www.mathjax.org/#features">MathJax</a> website includes a live typesetting tool that allows users to 
+enter LaTeX and AsciiMath code. This tool will be used before creating the black-box tests to verify the correct LaTex code
+that corresponds with the AsciiMath input.
 </p>
 
 </div>

@@ -1,0 +1,47 @@
+@title AsciiMath to LaTeX Parser in Swift
+
+@s Introduction
+**intro here**
+
+--- parser.swift
+@{Imports}
+class Parser {
+	@{Member variables}
+	@{Constructor}
+	@{Validate input}
+	@{Convert to latex}
+}
+---
+
+We will need the core functionality of Foundation for string processing and reading from stdin.
+--- Imports
+import Foundation
+---
+
+The parser will need to keep track of several global variables.
+--- Member variables
+var errorMessage: String = ""
+---
+
+The class will be initialized with a string representing the AsciiMath equation.
+--- Constructor
+init(amEquation: String) {
+    println("Parser initialized with: '\(amEquation)'")
+}
+---
+
+This function will parse the input, and return false if an error is encountered, also setting
+a member variable with the error string before returning false. If no error is encountered, true
+will be returned.
+--- Validate input
+func parseInput() -> Bool {
+	return true
+}
+---
+
+Once the input is validated and parsed, the AST needs to be converted to LaTeX source code.
+--- Convert to latex
+func convertToLatex() -> String {
+	return ""
+}
+---

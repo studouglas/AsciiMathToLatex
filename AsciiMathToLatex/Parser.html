@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Hello world in Swift</title>
+<title>AsciiMath to LaTeX Parser in Swift</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -42,27 +42,31 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>Hello world in Swift</h1>
+<h1>AsciiMath to LaTeX Parser in Swift</h1>
 <a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
-<p>This is an example hello world program.
-We can define codeblocks with <code>---</code>
+<p><strong>intro here</strong>
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>main.swift</strong> <a href="main.html#1:1">1</a>}</span>
+<span class="codeblock_name">{<strong>parser.swift</strong> <a href="Parser.html#1:1">1</a>}</span>
 <pre class="prettyprint">
-<span class="nocode pln">{Imports, <a href="main.html#1:1">1</a>}</span>
-<span class="nocode pln">{Print a string, <a href="main.html#1:1">1</a>}</span>
+<span class="nocode pln">{Imports, <a href="Parser.html#1:1">1</a>}</span>
+class Parser {
+<span class="nocode pln">	{Member variables, <a href="Parser.html#1:1">1</a>}</span>
+<span class="nocode pln">	{Constructor, <a href="Parser.html#1:1">1</a>}</span>
+<span class="nocode pln">	{Validate input, <a href="Parser.html#1:1">1</a>}</span>
+<span class="nocode pln">	{Convert to latex, <a href="Parser.html#1:1">1</a>}</span>
+}
 </pre>
 
 
 
 </div>
-<p>Now we can define the <code>Imports</code> codeblock:
+<p>We will need the core functionality of Foundation for string processing and reading from stdin.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Imports <a href="main.html#1:1">1</a>}</span>
+<span class="codeblock_name">{Imports <a href="Parser.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 import Foundation
 </pre>
@@ -70,13 +74,57 @@ import Foundation
 
 
 </div>
-<p>Finally, our program needs to print "hello world"
+<p>The parser will need to keep track of several global variables.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Print a string <a href="main.html#1:1">1</a>}</span>
+<span class="codeblock_name">{Member variables <a href="Parser.html#1:1">1</a>}</span>
 <pre class="prettyprint">
-println("hello world")
+var errorMessage: String = ""
+</pre>
+
+
+
+</div>
+<p>The class will be initialized with a string representing the AsciiMath equation.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Constructor <a href="Parser.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+init(amEquation: String) {
+    println("Parser initialized with: '\(amEquation)'")
+}
+</pre>
+
+
+
+</div>
+<p>This function will parse the input, and return false if an error is encountered, also setting
+a member variable with the error string before returning false. If no error is encountered, true
+will be returned.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Validate input <a href="Parser.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+func parseInput() -&gt; Bool {
+	return true
+}
+</pre>
+
+
+
+</div>
+<p>Once the input is validated and parsed, the AST needs to be converted to LaTeX source code.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Convert to latex <a href="Parser.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+func convertToLatex() -&gt; String {
+	return ""
+}
 </pre>
 
 

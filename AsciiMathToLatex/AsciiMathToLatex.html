@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Hello world in Swift</title>
+<title>AsciiMath to LaTeX in Swift</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -42,23 +42,25 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>Hello world in Swift</h1>
+<h1>AsciiMath to LaTeX in Swift</h1>
 <a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
-<p>This is an example hello world program.
-We can define codeblocks with <code>---</code>
+<p><strong>intro here</strong>
+</p>
+<p>The entry point to the program, our main file will take in the input equation, and initiate the
+classes to lex, parse, and convert it.
 </p>
 
 <div class="codeblock">
 <span class="codeblock_name">{<strong>main.swift</strong> <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 <span class="nocode pln">{Imports, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<span class="nocode pln">{Print a string, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="nocode pln">{Read input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
 </pre>
 
 
 
 </div>
-<p>Now we can define the <code>Imports</code> codeblock:
+<p>We will need the core functionality of Foundation for string processing and reading from stdin.
 </p>
 
 <div class="codeblock">
@@ -70,13 +72,70 @@ import Foundation
 
 
 </div>
-<p>Finally, our program needs to print "hello world"
+<p>Read the equation from stdin and save it.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Print a string <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="codeblock_name">{Read input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
 <pre class="prettyprint">
-println("hello world")
+println("Processing input...")
+let stdin = NSFileHandle.fileHandleWithStandardInput()
+let inputData = stdin.availableData;
+<span class="nocode pln">{Check input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="nocode pln">{Parse input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="nocode pln">{Print output, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+</pre>
+
+
+
+</div>
+<p>Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
+user and exit if no input was passed.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Check input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+let rawInputText = NSString(data: inputData, encoding: NSUTF8StringEncoding)
+if (rawInputText == nil) {
+    println("Usage: 'echo 'x + y' | ./main")
+    exit(1)
+}
+
+let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+println("AsciiMath Equation: '\(asciiMathText)'")
+</pre>
+
+
+
+</div>
+<p>At this point, our input equation is ready for our lexing and parsing operations. 
+Firstly, we create a new parser object.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Parse input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+let parser = Parser(amEquation: asciiMathText)
+if !parser.parseInput() {
+	println(parser.errorMessage)
+	exit(2)
+}
+println("Parsed input successfully!")
+</pre>
+
+
+
+</div>
+<p>Once the input's been parsed and an AST has been generated, convert to LaTeX and print it out.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Print output <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<pre class="prettyprint">
+let latexOutput = parser.convertToLatex()
+println("LaTeX output:")
+println(latexOutput)
 </pre>
 
 

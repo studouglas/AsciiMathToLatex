@@ -1,7 +1,21 @@
-@title AsciiMath to LaTeX Parser in Swift
+@title AsciiMath to LaTeX Parser in Swift (P0.py)
 
 @s Introduction
 **intro here**
+
+@s Grammar
+--- Grammar definition
+/* AsciiMath grammar
+v ::= [A-Za-z] | greek letters | numbers | other constant symbols
+u ::= sqrt | text | bb | other unary symbols for font commands
+b ::= frac | root | stackrel
+l ::= ( | [ | { | (: | {:
+r ::= ) | ] | } | :) | :}
+S ::= v | lEr | uS | bSS
+I ::= S_S | S^S | S_S^S | S
+E ::= IE | I/I  
+*/
+---
 
 --- parser.swift
 @{Imports}
@@ -21,12 +35,15 @@ import Foundation
 The parser will need to keep track of several global variables.
 --- Member variables
 var errorMessage: String = ""
+var amEquation: String = ""
 ---
+
 
 The class will be initialized with a string representing the AsciiMath equation.
 --- Constructor
 init(amEquation: String) {
     println("Parser initialized with: '\(amEquation)'")
+    self.amEquation = amEquation
 }
 ---
 
@@ -35,6 +52,10 @@ a member variable with the error string before returning false. If no error is e
 will be returned.
 --- Validate input
 func parseInput() -> Bool {
+	let lexer = Lexer(amEquation: amEquation);
+	while (lexer.currentCharacter != nil) {
+		lexer.getSymbol()
+	}
 	return true
 }
 ---

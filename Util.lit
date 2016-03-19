@@ -1,0 +1,30 @@
+@title AsciiMath to LaTeX Utilities in Swift
+
+@s Introduction
+Some utility functions to simplify program.
+
+@s Description
+Desc. here
+
+--- util.swift
+@{String utilities}
+---
+
+---String utilities
+extension String {
+	@{Access characters with subscript}
+}
+---
+
+Note: these are UNSAFE with non-ascii strings. Switching to newer version of swift will solve this.
+--- Access characters with subscript
+subscript(i: Int) -> Character {
+	return Array(self)[i]	
+}
+subscript(i: Int) -> String {
+	return String(Array(self)[i])
+}
+subscript(r: Range<Int>) -> String {
+	return String(Array(self)[r.startIndex ... r.endIndex])
+}
+---

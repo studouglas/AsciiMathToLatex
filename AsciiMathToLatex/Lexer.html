@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>AsciiMath to LaTeX Parser in Swift (P0.py)</title>
+<title>AsciiMath to LaTeX Lexer in Swift (SC.py)</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -42,16 +42,11 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>AsciiMath to LaTeX Parser in Swift (P0.py)</h1>
-<a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
-<p><strong>intro here</strong>
-</p>
-
-</div>
-<a name="1:2"><div class="section"><h4>2. Grammar</h4></a>
+<h1>AsciiMath to LaTeX Lexer in Swift (SC.py)</h1>
+<a name="1:1"><div class="section"><h4>1. Grammar</h4></a>
 
 <div class="codeblock">
-<span class="codeblock_name">{Grammar definition <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Grammar definition <a href="Lexer.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 /* AsciiMath grammar
 v ::= [A-Za-z] | greek letters | numbers | other constant symbols
@@ -68,96 +63,248 @@ E ::= IE | I/I
 
 
 </div>
+</div>
+<a name="1:2"><div class="section"><h4>2. Class definition</h4></a>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>parser.swift</strong> <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{<strong>lexer.swift</strong> <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-<span class="nocode pln">{Imports, <a href="Parser.html#1:2">2</a>}</span>
-class Parser {
-<span class="nocode pln">	{Member variables, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Constructor, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Validate input, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Convert to latex, <a href="Parser.html#1:2">2</a>}</span>
+class Lexer {
+<span class="nocode pln">	{Member variables, <a href="Lexer.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Keyword definition, <a href="Lexer.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Constructor, <a href="Lexer.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Get symbol, <a href="Lexer.html#1:3">3</a>}</span>
+<span class="nocode pln">	{Get character, <a href="Lexer.html#1:3">3</a>}</span>
 }
 </pre>
 
 
 
 </div>
-<p>We will need the core functionality of Foundation for string processing and reading from stdin.
-</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Imports <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Member variables <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-import Foundation
+let amEquation: String!
+var keywords: [Keyword] = [Keyword]()
+
+var currentSymbol: String?
+var currentCharacter: Character?
+var currentIndex: Int = 0
+
+<span class="nocode pln">{Symbols, <a href="Lexer.html#1:2">2</a>}</span>
 </pre>
 
 
 
 </div>
-<p>The parser will need to keep track of several global variables.
-</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Member variables <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Symbols <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-var errorMessage: String = ""
-var amEquation: String = ""
+let SQRT = "sqrt"
+let TEXT = "text"
+let BB = "bb"
+
+let FRAC = "frac"
+let ROOT = "root"
+let STACKREL = "stackrel"
+
+let LPAREN = "("
+let RPAREN = ")"
+let LBRACKET = "["
+let RBRACKET = "]"
+let LBRACE = "{"
+let RBRACE = "}"
+// todo, add smiley face bracket things
+
+let SUPERSCRIPT = "^"
+let SUBSCRIPT = "_"
+
+let DIV = "/"
+let EOF = ""
+let SPACE = " "
 </pre>
 
 
 
 </div>
-<p>The class will be initialized with a string representing the AsciiMath equation.
+<p>A keyword stores the string representation of the keyword or symbol, and it's type.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Constructor <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Keyword definition <a href="Lexer.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+<span class="nocode pln">{Keyword type definition, <a href="Lexer.html#1:2">2</a>}</span>
+struct Keyword {
+	var id = ""
+	var type: KeywordType!
+	init(id: String, type: KeywordType) {
+		self.id = id
+		self.type = type
+	}
+}
+</pre>
+
+
+
+</div>
+<p>Keywords can be unary or binary
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Keyword type definition <a href="Lexer.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+enum KeywordType {
+	case Unary
+	case Binary
+}
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Constructor <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 init(amEquation: String) {
-    println("Parser initialized with: '\(amEquation)'")
-    self.amEquation = amEquation
+	println("Lexer initializing...")
+<span class="nocode pln">	{Instantiate keywords, <a href="Lexer.html#1:2">2</a>}</span>
+	self.amEquation = amEquation
+	// note: swift 2.2 supports accessing chracter array directly,
+	// but i'm using older compiler so must manually make the array
+	// self.amEquationChars.reserveCapacity(count(amEquation)) // for performance
+	// for c in amEquation {
+	// 	self.amEquationChars.append(c)
+	// }
+	getCharacter()
+	getSymbol()
 }
 </pre>
 
 
 
 </div>
-<p>This function will parse the input, and return false if an error is encountered, also setting
-a member variable with the error string before returning false. If no error is encountered, true
-will be returned.
+<p>We need to 
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Validate input <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Instantiate keywords <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-func parseInput() -&gt; Bool {
-	let lexer = Lexer(amEquation: amEquation);
-	while (lexer.currentCharacter != nil) {
-		lexer.getSymbol()
-		// println(lexer.currentCharacter)
+keywords.append(Keyword(id: SQRT, type: .Unary))
+keywords.append(Keyword(id: TEXT, type: .Unary))
+keywords.append(Keyword(id: BB, type: .Unary))
+
+keywords.append(Keyword(id: FRAC, type: .Binary))
+keywords.append(Keyword(id: ROOT, type: .Binary))
+keywords.append(Keyword(id: STACKREL, type: .Binary))
+
+keywords.append(Keyword(id: SUBSCRIPT, type: .Binary))
+keywords.append(Keyword(id: SUPERSCRIPT, type: .Binary))
+</pre>
+
+
+
+</div>
+</div>
+<a name="1:3"><div class="section"><h4>3. Functions</h4></a>
+
+<div class="codeblock">
+<span class="codeblock_name">{Get symbol <a href="Lexer.html#1:3">3</a>}</span>
+<pre class="prettyprint">
+func getSymbol() {
+	if (currentCharacter == nil) {
+		println("ERROR. Current character is nil.")
+		currentSymbol = EOF
+		return
 	}
-	return true
+
+	println("Lexer about to getSymbol for character: '\(currentCharacter!)'")
+	switch currentCharacter! {
+		case "b":
+			if amEquation[currentIndex] == "b" {
+				currentSymbol = BB
+				currentIndex++
+			}
+		case "f":
+			if amEquation[currentIndex ..&lt; currentIndex+count(FRAC)] == FRAC[1 ..&lt; count(FRAC)] {
+				currentSymbol = FRAC
+				currentIndex += count(FRAC) - 1
+			}
+		case "r":
+			if amEquation[currentIndex ..&lt; currentIndex+count(ROOT)] == ROOT[1 ..&lt; count(ROOT)]	{
+				currentSymbol = ROOT
+				currentIndex += count(ROOT) - 1
+			}
+		case "s":
+			if amEquation[currentIndex ..&lt; currentIndex+count(SQRT)] == SQRT[1 ..&lt; count(SQRT)] {
+				currentSymbol = SQRT
+				currentIndex += count(SQRT) - 1
+			} else if amEquation[currentIndex ..&lt; currentIndex + count(STACKREL)] == STACKREL[1 ..&lt; count(STACKREL)] {
+				currentSymbol = STACKREL
+				currentIndex += count(STACKREL) - 1
+			}
+		case "t":
+			if amEquation[currentIndex ..&lt; currentIndex+count(TEXT)] == TEXT[1 ..&lt; count(TEXT)] {
+				currentSymbol = TEXT
+				currentIndex += count(TEXT) - 1
+			}
+
+		// brackets
+		case "(":
+			currentSymbol = LPAREN
+		case ")":
+			currentSymbol = RPAREN
+		case "[":
+			currentSymbol = LBRACKET
+		case "]":
+			currentSymbol = RBRACKET
+		case "{":
+			currentSymbol = LBRACE
+		case "}":
+			currentSymbol = RBRACE
+		
+		// single-symbol operators
+		case "^":
+			currentSymbol = SUPERSCRIPT
+		case "_":
+			currentSymbol = SUBSCRIPT
+		case "/":
+			currentSymbol = DIV
+
+		// space
+		case " ":
+			currentSymbol = SPACE
+		default:
+			currentSymbol = nil
+	}
+	println("Lexer set currentSymbol to: '\(currentSymbol)'")
+	getCharacter()
 }
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
 </div>
-<p>Once the input is validated and parsed, the AST needs to be converted to LaTeX source code.
-</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Convert to latex <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Get character <a href="Lexer.html#1:3">3</a>}</span>
 <pre class="prettyprint">
-func convertToLatex() -&gt; String {
-	return ""
+func getCharacter() {
+	if (currentIndex &gt;= count(amEquation)) {
+		println("Lexer reached end of amEquation")
+		currentCharacter = nil;
+	} else {
+		currentCharacter = amEquation[currentIndex];
+		currentIndex++;
+		println("Lexer got currentCharacter: '\(currentCharacter)', currentIndex: \(currentIndex)")
+	}
 }
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
 </div>
 
 </div>

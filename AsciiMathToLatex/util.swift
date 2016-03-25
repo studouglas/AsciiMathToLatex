@@ -9,6 +9,8 @@ extension String {
 		return String(Array(self)[r.startIndex ... r.endIndex])
 	}
 
+	
+
 }
 
 

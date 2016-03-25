@@ -13,6 +13,7 @@ Desc. here
 ---String utilities
 extension String {
 	@{Access characters with subscript}
+	@{Equality of character and string}
 }
 ---
 
@@ -27,4 +28,8 @@ subscript(i: Int) -> String {
 subscript(r: Range<Int>) -> String {
 	return String(Array(self)[r.startIndex ... r.endIndex])
 }
+---
+
+--- Equality of character and string
+
 ---

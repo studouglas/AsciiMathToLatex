@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		176BF90D1C9A307A00A2858F /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176BF90C1C9A307A00A2858F /* parser.swift */; };
 		1792A1AE1C9DA94C00D1848A /* lexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1792A1AD1C9DA94C00D1848A /* lexer.swift */; };
+		17DABDB61CA06E400061D933 /* util.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17DABDB51CA06E400061D933 /* util.swift */; };
 		17E3A1801C875043001B5287 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E3A17F1C875043001B5287 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		176BF90C1C9A307A00A2858F /* parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = parser.swift; sourceTree = "<group>"; };
 		1792A1AD1C9DA94C00D1848A /* lexer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = lexer.swift; sourceTree = "<group>"; };
+		17DABDB51CA06E400061D933 /* util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = util.swift; sourceTree = "<group>"; };
 		17E3A1751C874F9C001B5287 /* AsciiMathToLatex */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AsciiMathToLatex; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E3A17F1C875043001B5287 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -63,6 +65,7 @@
 			children = (
 				176BF90C1C9A307A00A2858F /* parser.swift */,
 				1792A1AD1C9DA94C00D1848A /* lexer.swift */,
+				17DABDB51CA06E400061D933 /* util.swift */,
 				17E3A17F1C875043001B5287 /* main.swift */,
 			);
 			path = AsciiMathToLatex;
@@ -127,6 +130,7 @@
 				176BF90D1C9A307A00A2858F /* parser.swift in Sources */,
 				1792A1AE1C9DA94C00D1848A /* lexer.swift in Sources */,
 				17E3A1801C875043001B5287 /* main.swift in Sources */,
+				17DABDB61CA06E400061D933 /* util.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

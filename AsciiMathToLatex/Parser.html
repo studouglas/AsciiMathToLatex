@@ -54,14 +54,13 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 <span class="codeblock_name">{Grammar definition <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 /* AsciiMath grammar
-v ::= [A-Za-z] | greek letters | numbers | other constant symbols
-u ::= sqrt | text | bb | other unary symbols for font commands
-b ::= frac | root | stackrel
-l ::= ( | [ | { | (: | {:
-r ::= ) | ] | } | :) | :}
-S ::= v | lEr | uS | bSS
-I ::= S_S | S^S | S_S^S | S
-E ::= IE | I/I  
+c ::= [A-Za-z] | greek letters | numbers | other constant symbols    constantSymbols
+u ::= sqrt | text | bb | other unary symbols for font commands       unarySymbols
+b ::= frac | root | stackrel                                         binarySymbols
+l ::= ( | [ | { | (: | {:                                            leftBrackets
+r ::= ) | ] | } | :) | :}                                            rightBrackets
+S ::= c | lEr | uS | bSS                                             simpleExpression
+E ::= SE | S/S | S_S | S^S | S_S^S | S                               expression
 */
 </pre>
 
@@ -76,9 +75,10 @@ E ::= IE | I/I
 class Parser {
 <span class="nocode pln">	{Member variables, <a href="Parser.html#1:2">2</a>}</span>
 <span class="nocode pln">	{Constructor, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Validate input, <a href="Parser.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Parse input, <a href="Parser.html#1:2">2</a>}</span>
 <span class="nocode pln">	{Convert to latex, <a href="Parser.html#1:2">2</a>}</span>
 }
+<span class="nocode pln">{Custom types, <a href="Parser.html#1:2">2</a>}</span>
 </pre>
 
 
@@ -91,19 +91,6 @@ class Parser {
 <span class="codeblock_name">{Imports <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 import Foundation
-</pre>
-
-
-
-</div>
-<p>The parser will need to keep track of several global variables.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Member variables <a href="Parser.html#1:2">2</a>}</span>
-<pre class="prettyprint">
-var errorMessage: String = ""
-var amEquation: String = ""
 </pre>
 
 
@@ -124,21 +111,227 @@ init(amEquation: String) {
 
 
 </div>
+<p>The parser will need to keep track of several global variables.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Member variables <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+var errorMessage: String = ""
+var amEquation: String = ""
+</pre>
+
+
+
+</div>
 <p>This function will parse the input, and return false if an error is encountered, also setting
 a member variable with the error string before returning false. If no error is encountered, true
 will be returned.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Validate input <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Parse input <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 func parseInput() -&gt; Bool {
-	let lexer = Lexer(amEquation: amEquation);
-	while (lexer.currentCharacter != nil) {
-		lexer.getSymbol()
-		// println(lexer.currentCharacter)
+	let lexer = Lexer(amEquation: amEquation)
+	var root: Expression? = lexer.getNextExpression()
+	if let r = root {
+		println("Done lexing, we now have our root expression!:\n")
+		println(r.toString())
+		println("\nAnd our LaTeX output:\n")
+		println(r.toLatexString())
+	} else {
+		println("Root is nil")
 	}
 	return true
+}
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Custom types <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+<span class="nocode pln">{Bracket type, <a href="Parser.html#1:2">2</a>}</span>
+<span class="nocode pln">{Simple expression type, <a href="Parser.html#1:2">2</a>}</span>
+<span class="nocode pln">{Expression type, <a href="Parser.html#1:2">2</a>}</span>
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Simple expression type <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+protocol SimpleExpression {
+	func toString() -&gt; String
+	func toLatexString() -&gt; String
+}
+struct ConstantSE: SimpleExpression {
+	var str = ""
+	init(str: String) {
+		self.str = str
+	}
+	func toString() -&gt; String {
+		return str
+	}
+	func toLatexString() -&gt; String {
+		return str
+	}
+}
+struct DelimitedSE: SimpleExpression {
+	var expression: Expression!
+	var bracketType: BracketType!
+	
+	init(expr: Expression, bracketType: BracketType) {
+ 		self.expression = expr
+ 		self.bracketType = bracketType
+	}
+	func toString() -&gt; String {
+		return "\(bracketType.leftString())\(expression.toString())\(bracketType.rightString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(bracketType.leftString())\(expression.toLatexString())\(bracketType.rightString())"
+	}
+}
+
+struct UnarySE: SimpleExpression {
+	var simpleExpression: SimpleExpression
+	var unaryOperator = ""
+
+	init(op: String, simpleExpr: SimpleExpression) {
+		self.unaryOperator = op
+		self.simpleExpression = simpleExpr
+	}
+	func toString() -&gt; String {
+		return "\(unaryOperator)\(simpleExpression.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\\\(unaryOperator){\(simpleExpression.toLatexString())}"
+	}
+}
+
+struct BinarySE: SimpleExpression {
+	var simpleExpressionLeft: SimpleExpression
+	var simpleExpressionRight: SimpleExpression
+	var binaryOperator = ""
+
+	init(op: String, leftSE: SimpleExpression, rightSE: SimpleExpression) {
+		self.binaryOperator = op
+		self.simpleExpressionLeft = leftSE
+		self.simpleExpressionRight = rightSE
+	}
+	func toString() -&gt; String {
+		return "\(binaryOperator)\(simpleExpressionLeft.toString())\(simpleExpressionRight.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\\\(binaryOperator){\(simpleExpressionLeft.toLatexString())}{\(simpleExpressionRight.toLatexString())}"
+	}
+}
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Expression type <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+protocol Expression {
+	func toString() -&gt; String
+	func toLatexString() -&gt; String
+}
+struct SimpleExpressionE: Expression {
+	var simpleExpression: SimpleExpression
+	init(simpleExpr: SimpleExpression) {
+		self.simpleExpression = simpleExpr
+	}
+	func toString() -&gt; String {
+		return simpleExpression.toString()
+	}
+	func toLatexString() -&gt; String {
+		return simpleExpression.toLatexString()
+	}
+}
+struct SequenceE: Expression {
+	var simpleExpression: SimpleExpression
+	var expression: Expression
+
+	init(simpleExpr: SimpleExpression, expr: Expression) {
+		self.simpleExpression = simpleExpr
+		self.expression = expr
+	}
+	func toString() -&gt; String {
+		return "\(simpleExpression.toString())\(expression.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(simpleExpression.toLatexString())\(expression.toLatexString())"
+	}
+}
+struct FractionE: Expression {
+	var simpleExpressionTop: SimpleExpression
+	var simpleExpressionBottom: SimpleExpression
+
+	init(top: SimpleExpression, bottom: SimpleExpression) {
+		self.simpleExpressionTop = top
+		self.simpleExpressionBottom = bottom
+	}
+	func toString() -&gt; String {
+		return "\(simpleExpressionTop.toString())/\(simpleExpressionBottom.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\\frac{\(simpleExpressionTop.toLatexString())}{\(simpleExpressionBottom.toLatexString())}"
+	}
+}
+struct SubscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSubscript: SimpleExpression
+
+	init(base: SimpleExpression, sub: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSubscript = sub
+	}
+	func toString() -&gt; String {
+		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}"
+	}
+}
+struct SuperscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSuperscript: SimpleExpression
+
+	init(base: SimpleExpression, superscript: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSuperscript = superscript
+	}
+	func toString() -&gt; String {
+		return "\(simpleExpressionBase.toString())^\(simpleExpressionSuperscript.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(simpleExpressionBase.toLatexString())^{\(simpleExpressionSuperscript.toLatexString())}"
+	}
+}
+struct SubSuperscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSubscript: SimpleExpression
+	var simpleExpressionSuperscript: SimpleExpression
+
+	init(base: SimpleExpression, sub: SimpleExpression, superscript: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSubscript = sub
+		self.simpleExpressionSuperscript = superscript
+	}
+	func toString() -&gt; String {
+		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())^\(simpleExpressionSuperscript.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}^{\(simpleExpressionSuperscript.toLatexString())}"
+	}
 }
 </pre>
 
@@ -153,6 +346,39 @@ func parseInput() -&gt; Bool {
 <pre class="prettyprint">
 func convertToLatex() -&gt; String {
 	return ""
+}
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Bracket type <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+enum BracketType {
+	case Paren, Bracket, Brace
+	func leftString() -&gt; String {
+		switch self {
+			case Paren:
+				return "("
+			case Bracket:
+				return "["
+			case Brace:
+				return "{"
+		}
+	}
+	func rightString() -&gt; String {
+		switch self {
+			case Paren:
+				return ")"
+			case Bracket:
+				return "]"
+			case Brace:
+				return "}"
+			
+		}
+	}
 }
 </pre>
 

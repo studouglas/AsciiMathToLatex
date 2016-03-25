@@ -6,14 +6,13 @@
 @s Grammar
 --- Grammar definition
 /* AsciiMath grammar
-v ::= [A-Za-z] | greek letters | numbers | other constant symbols
-u ::= sqrt | text | bb | other unary symbols for font commands
-b ::= frac | root | stackrel
-l ::= ( | [ | { | (: | {:
-r ::= ) | ] | } | :) | :}
-S ::= v | lEr | uS | bSS
-I ::= S_S | S^S | S_S^S | S
-E ::= IE | I/I  
+c ::= [A-Za-z] | greek letters | numbers | other constant symbols    constantSymbols
+u ::= sqrt | text | bb | other unary symbols for font commands       unarySymbols
+b ::= frac | root | stackrel                                         binarySymbols
+l ::= ( | [ | { | (: | {:                                            leftBrackets
+r ::= ) | ] | } | :) | :}                                            rightBrackets
+S ::= c | lEr | uS | bSS                                             simpleExpression
+E ::= SE | S/S | S_S | S^S | S_S^S | S                               expression
 */
 ---
 
@@ -22,22 +21,16 @@ E ::= IE | I/I
 class Parser {
 	@{Member variables}
 	@{Constructor}
-	@{Validate input}
+	@{Parse input}
 	@{Convert to latex}
 }
+@{Custom types}
 ---
 
 We will need the core functionality of Foundation for string processing and reading from stdin.
 --- Imports
 import Foundation
 ---
-
-The parser will need to keep track of several global variables.
---- Member variables
-var errorMessage: String = ""
-var amEquation: String = ""
----
-
 
 The class will be initialized with a string representing the AsciiMath equation.
 --- Constructor
@@ -47,22 +40,233 @@ init(amEquation: String) {
 }
 ---
 
+The parser will need to keep track of several global variables.
+--- Member variables
+var errorMessage: String = ""
+var amEquation: String = ""
+---
+
+
 This function will parse the input, and return false if an error is encountered, also setting
 a member variable with the error string before returning false. If no error is encountered, true
 will be returned.
---- Validate input
+--- Parse input
 func parseInput() -> Bool {
-	let lexer = Lexer(amEquation: amEquation);
-	while (lexer.currentCharacter != nil) {
-		lexer.getSymbol()
+	let lexer = Lexer(amEquation: amEquation)
+	var root: Expression? = lexer.getNextExpression()
+	if let r = root {
+		println("Done lexing, we now have our root expression!:\n")
+		println(r.toString())
+		println("\nAnd our LaTeX output:\n")
+		println(r.toLatexString())
+	} else {
+		println("Root is nil")
 	}
 	return true
 }
 ---
 
+--- Custom types
+@{Bracket type}
+@{Simple expression type}
+@{Expression type}
+---
+
+--- Simple expression type
+protocol SimpleExpression {
+	func toString() -> String
+	func toLatexString() -> String
+}
+struct ConstantSE: SimpleExpression {
+	var str = ""
+	init(str: String) {
+		self.str = str
+	}
+	func toString() -> String {
+		return str
+	}
+	func toLatexString() -> String {
+		return str
+	}
+}
+struct DelimitedSE: SimpleExpression {
+	var expression: Expression!
+	var bracketType: BracketType!
+	
+	init(expr: Expression, bracketType: BracketType) {
+ 		self.expression = expr
+ 		self.bracketType = bracketType
+	}
+	func toString() -> String {
+		return "\(bracketType.leftString())\(expression.toString())\(bracketType.rightString())"
+	}
+	func toLatexString() -> String {
+		return "\(bracketType.leftString())\(expression.toLatexString())\(bracketType.rightString())"
+	}
+}
+
+struct UnarySE: SimpleExpression {
+	var simpleExpression: SimpleExpression
+	var unaryOperator = ""
+
+	init(op: String, simpleExpr: SimpleExpression) {
+		self.unaryOperator = op
+		self.simpleExpression = simpleExpr
+	}
+	func toString() -> String {
+		return "\(unaryOperator)\(simpleExpression.toString())"
+	}
+	func toLatexString() -> String {
+		return "\\\(unaryOperator){\(simpleExpression.toLatexString())}"
+	}
+}
+
+struct BinarySE: SimpleExpression {
+	var simpleExpressionLeft: SimpleExpression
+	var simpleExpressionRight: SimpleExpression
+	var binaryOperator = ""
+
+	init(op: String, leftSE: SimpleExpression, rightSE: SimpleExpression) {
+		self.binaryOperator = op
+		self.simpleExpressionLeft = leftSE
+		self.simpleExpressionRight = rightSE
+	}
+	func toString() -> String {
+		return "\(binaryOperator)\(simpleExpressionLeft.toString())\(simpleExpressionRight.toString())"
+	}
+	func toLatexString() -> String {
+		return "\\\(binaryOperator){\(simpleExpressionLeft.toLatexString())}{\(simpleExpressionRight.toLatexString())}"
+	}
+}
+---
+
+--- Expression type
+protocol Expression {
+	func toString() -> String
+	func toLatexString() -> String
+}
+struct SimpleExpressionE: Expression {
+	var simpleExpression: SimpleExpression
+	init(simpleExpr: SimpleExpression) {
+		self.simpleExpression = simpleExpr
+	}
+	func toString() -> String {
+		return simpleExpression.toString()
+	}
+	func toLatexString() -> String {
+		return simpleExpression.toLatexString()
+	}
+}
+struct SequenceE: Expression {
+	var simpleExpression: SimpleExpression
+	var expression: Expression
+
+	init(simpleExpr: SimpleExpression, expr: Expression) {
+		self.simpleExpression = simpleExpr
+		self.expression = expr
+	}
+	func toString() -> String {
+		return "\(simpleExpression.toString())\(expression.toString())"
+	}
+	func toLatexString() -> String {
+		return "\(simpleExpression.toLatexString())\(expression.toLatexString())"
+	}
+}
+struct FractionE: Expression {
+	var simpleExpressionTop: SimpleExpression
+	var simpleExpressionBottom: SimpleExpression
+
+	init(top: SimpleExpression, bottom: SimpleExpression) {
+		self.simpleExpressionTop = top
+		self.simpleExpressionBottom = bottom
+	}
+	func toString() -> String {
+		return "\(simpleExpressionTop.toString())/\(simpleExpressionBottom.toString())"
+	}
+	func toLatexString() -> String {
+		return "\\frac{\(simpleExpressionTop.toLatexString())}{\(simpleExpressionBottom.toLatexString())}"
+	}
+}
+struct SubscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSubscript: SimpleExpression
+
+	init(base: SimpleExpression, sub: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSubscript = sub
+	}
+	func toString() -> String {
+		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())"
+	}
+	func toLatexString() -> String {
+		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}"
+	}
+}
+struct SuperscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSuperscript: SimpleExpression
+
+	init(base: SimpleExpression, superscript: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSuperscript = superscript
+	}
+	func toString() -> String {
+		return "\(simpleExpressionBase.toString())^\(simpleExpressionSuperscript.toString())"
+	}
+	func toLatexString() -> String {
+		return "\(simpleExpressionBase.toLatexString())^{\(simpleExpressionSuperscript.toLatexString())}"
+	}
+}
+struct SubSuperscriptE: Expression {
+	var simpleExpressionBase: SimpleExpression
+	var simpleExpressionSubscript: SimpleExpression
+	var simpleExpressionSuperscript: SimpleExpression
+
+	init(base: SimpleExpression, sub: SimpleExpression, superscript: SimpleExpression) {
+		self.simpleExpressionBase = base
+		self.simpleExpressionSubscript = sub
+		self.simpleExpressionSuperscript = superscript
+	}
+	func toString() -> String {
+		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())^\(simpleExpressionSuperscript.toString())"
+	}
+	func toLatexString() -> String {
+		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}^{\(simpleExpressionSuperscript.toLatexString())}"
+	}
+}
+---
+
+
 Once the input is validated and parsed, the AST needs to be converted to LaTeX source code.
 --- Convert to latex
 func convertToLatex() -> String {
 	return ""
+}
+---
+
+--- Bracket type
+enum BracketType {
+	case Paren, Bracket, Brace
+	func leftString() -> String {
+		switch self {
+			case Paren:
+				return "("
+			case Bracket:
+				return "["
+			case Brace:
+				return "{"
+		}
+	}
+	func rightString() -> String {
+		switch self {
+			case Paren:
+				return ")"
+			case Bracket:
+				return "]"
+			case Brace:
+				return "}"
+			
+		}
+	}
 }
 ---

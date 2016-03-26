@@ -19,3 +19,4 @@ echo
 echo 'a/b -= alpha_(d in RR)^42 ~= qz sqrt5' | ./main
 echo
 echo 'sum_(i=1)^n i^3=((n(n+1))/2)^2' | ./main
+echo

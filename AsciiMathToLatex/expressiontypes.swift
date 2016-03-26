@@ -195,6 +195,16 @@ enum BracketType {
 			
 		}
 	}
+	init(str: String) {
+		switch(str) {
+			case "(",")": self = Paren
+			case "[","]": self = Bracket
+			case "{","}": self = Brace
+			default:
+				println("Error. Trying to initialize BracketType with unsupported bracket '\(str)'")
+				self = Paren
+		}
+	}
 }
 
 func latexForConstantSymbol(symbol: String) -> String {
@@ -263,7 +273,7 @@ func latexForConstantSymbol(symbol: String) -> String {
 			
 	}
 	// single letters shouldn't have \ prepended
-	if count(latexSymbol) == 1 {
+	if count(latexSymbol) == 1 || latexSymbol.toInt() != nil {
 		return symbol
 	}
 	return "\\\(latexSymbol) "

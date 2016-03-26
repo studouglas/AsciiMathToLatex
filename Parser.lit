@@ -84,85 +84,64 @@ func convertToLatex() -> String {
 
 --- Get next simple expression
 func getNextSimpleExpression() -> SimpleExpression? {
-	// println("getNextSimpleExpression...")
 	var currentSymbolOpt = lexer.getNextSymbol()
-	if (currentSymbolOpt == nil) {
+	if currentSymbolOpt == nil {
 		println("Error. Expected symbol in getNextSimpleExpression")
 		return nil
 	}
-	if (currentSymbolOpt! == "/" || currentSymbolOpt! == "_" || currentSymbolOpt! == "^") {
+	if contains(expressionSymbols, currentSymbolOpt!) {
 		currentSymbolOpt = lexer.getNextSymbol()
 		if (currentSymbolOpt == nil) {
-			println("Error. Expected non-nil symbol after /,_/^ in getNextSimpleExpression")
+			println("Error. Expected non-nil symbol after /,_,^ in getNextSimpleExpression")
 			return nil
 		}
 	}
 	let currentSymbol = currentSymbolOpt!
 	
-	switch (String(currentSymbol)) {
-		// lEr
-		case "[":
-			if let nextExpression = getNextExpression() {
-				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == "]" {
-					return DelimitedSE(expr: nextExpression, bracketType: .Bracket)
-				} else {
-					println("Error. ']' expected after expression.")
-					return nil
-				} 
+	// lEr
+	if contains(leftDelimeters, currentSymbol) {
+		if let nextExpression = getNextExpression() {
+			let delimType = BracketType(str: currentSymbol)
+			if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
+				return DelimitedSE(expr: nextExpression, bracketType: delimType)
 			} else {
-				println("Error. expected expression after '\(currentSymbol)'")
+				println("Error. '\(delimType.rightString())' expected after expression.")
 				return nil
-			}
-		case "{":
-			if let nextExpression = getNextExpression() {
-				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == "}" {
-					return DelimitedSE(expr: nextExpression, bracketType:.Brace)
-				} else {
-					println("Error. '}' expected after expression.")
-					return nil
-				} 
-			} else {
-				println("Error. expected expression after '\(currentSymbol)'")
-				return nil
-			}
-		case "(":
-			if let nextExpression = getNextExpression() {
-				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == ")" {
-					return DelimitedSE(expr: nextExpression, bracketType:.Paren)
-				} else {
-					println("Error. ')' expected after expression. nextExpression = '\(nextExpression.toString())'")
-					return nil
-				} 
-			} else {
-				println("Error. expected expression after '\(currentSymbol)'")
-				return nil
-			}
-
-		// uS
-		case "sqrt","text","bb":
-			if let nextSimpleExpression = getNextSimpleExpression() {
-				return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
-			} else {
-				println("Error. simple expression expected after \(currentSymbol)")
-				return nil
-			}
+			} 
+		} else {
+			println("Error. expected expression after '\(currentSymbol)'")
+			return nil
+		}
+	}
 		
-		// bSS
-		case "frac","root","stackrel":
-			if let nextSimpleExpression = getNextSimpleExpression() {
-				if let finalSimpleExpression = getNextSimpleExpression() {
-					return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
-				} else {
-					println("Error. Simple expression expected after '\(currentSymbol)'")
-					return nil	
-				}
+	// uS
+	else if contains(unarySymbols, currentSymbol) {
+		if let nextSimpleExpression = getNextSimpleExpression() {
+			return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
+		} else {
+			println("Error. simple expression expected after \(currentSymbol)")
+			return nil
+		}
+	}
+	
+	// bSS
+	else if contains(binarySymbols, currentSymbol) {
+		if let nextSimpleExpression = getNextSimpleExpression() {
+			if let finalSimpleExpression = getNextSimpleExpression() {
+				return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
 			} else {
 				println("Error. Simple expression expected after '\(currentSymbol)'")
-				return nil
+				return nil	
 			}
-		// c
-		default:
-			return ConstantSE(str: currentSymbol)
+		} else {
+			println("Error. Simple expression expected after '\(currentSymbol)'")
+			return nil
+		}
+	}
+	
+	// c
+	else {
+		return ConstantSE(str: currentSymbol)
 	}
 }
 ---
@@ -179,12 +158,12 @@ func getNextExpression() -> Expression? {
 	let nextCharacter = lexer.peekNextCharacter()
 	
 	// S
-	if (nextCharacter == nil || nextCharacter == ")") {
+	if nextCharacter == nil || contains(rightDelimeters, String(nextCharacter!)) {
 		return SimpleExpressionE(simpleExpr: simpleExpression)
 	}
 	
 	// SE
-	if nextCharacter != "/" && nextCharacter != "_" && nextCharacter != "^" {
+	if !contains(expressionSymbols, String(nextCharacter!)) {
 		if let nextExpression = getNextExpression() {
 			return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
 		} else {

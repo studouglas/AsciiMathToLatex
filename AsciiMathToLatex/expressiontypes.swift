@@ -27,7 +27,13 @@ struct DelimitedSE: SimpleExpression {
 		return "\(bracketType.leftString())\(expression.toString())\(bracketType.rightString())"
 	}
 	func toLatexString() -> String {
-		return "\(bracketType.leftString())\(expression.toLatexString())\(bracketType.rightString())"
+		var leftDelim = bracketType.leftString()
+		var rightDelim = bracketType.rightString()
+		if bracketType == .Brace {
+			leftDelim = "\\{"
+			rightDelim = "\\}"
+		}
+		return "\(leftDelim)\(expression.toLatexString())\(rightDelim)"
 	}
 }
 struct UnarySE: SimpleExpression {

@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>AsciiMath to LaTeX Lexer in Swift (SC.py)</title>
+<title>Lexer | AsciiMath to LaTeX</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -42,40 +42,19 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>AsciiMath to LaTeX Lexer in Swift (SC.py)</h1>
-<a name="1:1"><div class="section"><h4>1. Grammar</h4></a>
+<h1>Lexer | AsciiMath to LaTeX</h1>
+<a name="1:1"><div class="section"><h4>1. Class definition</h4></a>
 
 <div class="codeblock">
-<span class="codeblock_name">{Grammar definition <a href="Lexer.html#1:1">1</a>}</span>
-<pre class="prettyprint">
-/* AsciiMath grammar
-v ::= [A-Za-z] | greek letters | numbers | other constant symbols
-u ::= sqrt | text | bb | other unary symbols for font commands
-b ::= frac | root | stackrel
-l ::= ( | [ | { | (: | {:
-r ::= ) | ] | } | :) | :}
-S ::= v | lEr | uS | bSS
-I ::= S_S | S^S | S_S^S | S
-E ::= IE | I/I  
-*/
-</pre>
-
-
-
-</div>
-</div>
-<a name="1:2"><div class="section"><h4>2. Class definition</h4></a>
-
-<div class="codeblock">
-<span class="codeblock_name">{<strong>lexer.swift</strong> <a href="Lexer.html#1:2">2</a>}</span>
+<span class="codeblock_name">{<strong>lexer.swift</strong> <a href="Lexer.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 class Lexer {
-<span class="nocode pln">	{Member variables, <a href="Lexer.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Constructor, <a href="Lexer.html#1:2">2</a>}</span>
-<span class="nocode pln">	{Get symbol, <a href="Lexer.html#1:3">3</a>}</span>
-<span class="nocode pln">	{Get character, <a href="Lexer.html#1:3">3</a>}</span>
+<span class="nocode pln">	{Member variables, <a href="Lexer.html#1:1">1</a>}</span>
+<span class="nocode pln">	{Constructor, <a href="Lexer.html#1:1">1</a>}</span>
+<span class="nocode pln">	{Get symbol, <a href="Lexer.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Get character, <a href="Lexer.html#1:2">2</a>}</span>
 }
-<span class="nocode pln">{Symbols, <a href="Lexer.html#1:2">2</a>}</span>
+<span class="nocode pln">{Symbols, <a href="Lexer.html#1:1">1</a>}</span>
 </pre>
 
 
@@ -83,12 +62,11 @@ class Lexer {
 </div>
 
 <div class="codeblock">
-<span class="codeblock_name">{Member variables <a href="Lexer.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Member variables <a href="Lexer.html#1:1">1</a>}</span>
 <pre class="prettyprint">
-let amEquation: String!
+private let amEquation: String!
+private let allSymbols: [String]!
 var currentIndex: Int = 0
-
-let allSymbols: [String]!
 </pre>
 
 
@@ -96,12 +74,12 @@ let allSymbols: [String]!
 </div>
 
 <div class="codeblock">
-<span class="codeblock_name">{Symbols <a href="Lexer.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Symbols <a href="Lexer.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 let unarySymbols = ["sqrt", "text", "bb","hat","bar","ul","vec","dot","ddot"]
 let binarySymbols = ["frac", "root", "stackrel"]
-let leftDelimeters = ["(", "[", "{"]
-let rightDelimeters = [")", "]", "}"]
+let leftDelimiters = ["(", "[", "{"]
+let rightDelimiters = [")", "]", "}"]
 let expressionSymbols = ["^", "_", "/"]
 
 // constants
@@ -126,12 +104,12 @@ let arrowSymbols = ["uarr","darr","rarr","-&gt;","|-&gt;","larr","harr","rArr","
 </div>
 
 <div class="codeblock">
-<span class="codeblock_name">{Constructor <a href="Lexer.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Constructor <a href="Lexer.html#1:1">1</a>}</span>
 <pre class="prettyprint">
 init(amEquation: String) {
 	self.amEquation = amEquation
 
-	allSymbols = [unarySymbols, binarySymbols, leftDelimeters, rightDelimeters, expressionSymbols,
+	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
 				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
 }
 </pre>
@@ -140,10 +118,10 @@ init(amEquation: String) {
 
 </div>
 </div>
-<a name="1:3"><div class="section"><h4>3. Functions</h4></a>
+<a name="1:2"><div class="section"><h4>2. Functions</h4></a>
 
 <div class="codeblock">
-<span class="codeblock_name">{Get symbol <a href="Lexer.html#1:3">3</a>}</span>
+<span class="codeblock_name">{Get symbol <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 func getNextSymbol() -&gt; String? {
 	let currentCharacter = getNextCharacter()
@@ -165,16 +143,16 @@ func getNextSymbol() -&gt; String? {
 				currentIndex++
 				nextChar = peekNextCharacter()
 			}
-		} 
+		}
 		return currentSymbol
 	}
 }
 
-func getMulticharSymbol() -&gt; String? {
+private func getMulticharSymbol() -&gt; String? {
 	var longestMatch = ""
 	for symbol in allSymbols {
 		let symLength = count(symbol)
-		if currentIndex + symLength &lt; count(amEquation)
+		if currentIndex + symLength &lt;= count(amEquation)
 		&amp;&amp; amEquation[currentIndex-1..&lt;currentIndex+symLength-1] == symbol
 		&amp;&amp; symLength &gt; count(longestMatch) {
 			longestMatch = amEquation[currentIndex-1..&lt;currentIndex+symLength-1]
@@ -197,11 +175,11 @@ func peekNextCharacter() -&gt; Character? {
 </pre>
 
 
-<p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
+<p class="seealso">Used in section <a href="Lexer.html#1:1">1</a></p>
 </div>
 
 <div class="codeblock">
-<span class="codeblock_name">{Get character <a href="Lexer.html#1:3">3</a>}</span>
+<span class="codeblock_name">{Get character <a href="Lexer.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 func getNextCharacter() -&gt; Character? {
 	if (currentIndex &gt;= count(amEquation)) {
@@ -215,7 +193,7 @@ func getNextCharacter() -&gt; Character? {
 </pre>
 
 
-<p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
+<p class="seealso">Used in section <a href="Lexer.html#1:1">1</a></p>
 </div>
 
 </div>

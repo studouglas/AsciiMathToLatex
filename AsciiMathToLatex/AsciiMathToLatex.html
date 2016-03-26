@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>AsciiMath to LaTeX in Swift</title>
+<title>AsciiMath to LaTeX Converter</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -35,66 +35,115 @@ o.className&&e.test(o.className)){m=!0;break}if(!m){d.className+=" prettyprinted
 {h:m,c:d,j:u,i:o};K(r)}}}i<p.length?setTimeout(g,250):"function"===typeof a&&a()}for(var b=d||document.body,s=b.ownerDocument||document,b=[b.getElementsByTagName("pre"),b.getElementsByTagName("code"),b.getElementsByTagName("xmp")],p=[],m=0;m<b.length;++m)for(var j=0,k=b[m].length;j<k;++j)p.push(b[m][j]);var b=q,c=Date;c.now||(c={now:function(){return+new Date}});var i=0,r,n=/\blang(?:uage)?-([\w.]+)(?!\S)/,e=/\bprettyprint\b/,v=/\bprettyprinted\b/,w=/pre|xmp/i,t=/^code$/i,f=/^(?:pre|code|xmp)$/i,
 h={};g()}};typeof define==="function"&&define.amd&&define("google-code-prettify",[],function(){return Y})})();}()
 </script>
+<script>
+PR.registerLangHandler(PR.createSimpleLexer([[PR.PR_PLAIN,/^[ \n\r\t\v\f\0]+/,null," \n\r   \f\x00"],[PR.PR_STRING,/^"(?:[^"\\]|(?:\\.)|(?:\\\((?:[^"\\)]|\\.)*\)))*"/,null,'"']],[[PR.PR_LITERAL,/^(?:(?:0x[\da-fA-F][\da-fA-F_]*\.[\da-fA-F][\da-fA-F_]*[pP]?)|(?:\d[\d_]*\.\d[\d_]*[eE]?))[+-]?\d[\d_]*/,null],[PR.PR_LITERAL,/^-?(?:(?:0(?:(?:b[01][01_]*)|(?:o[0-7][0-7_]*)|(?:x[\da-fA-F][\da-fA-F_]*)))|(?:\d[\d_]*))/,null],[PR.PR_LITERAL,/^(?:true|false|nil)\b/,null],[PR.PR_KEYWORD,/^\b(?:__COLUMN__|__FILE__|__FUNCTION__|__LINE__|#available|#else|#elseif|#endif|#if|#line|arch|arm|arm64|associativity|as|break|case|catch|class|continue|convenience|default|defer|deinit|didSet|do|dynamic|dynamicType|else|enum|extension|fallthrough|final|for|func|get|guard|import|indirect|infix|init|inout|internal|i386|if|in|iOS|iOSApplicationExtension|is|lazy|left|let|mutating|none|nonmutating|operator|optional|OSX|OSXApplicationExtension|override|postfix|precedence|prefix|private|protocol|Protocol|public|required|rethrows|return|right|safe|self|set|static|struct|subscript|super|switch|throw|try|Type|typealias|unowned|unsafe|var|weak|watchOS|while|willSet|x86_64)\b/,null],[PR.PR_COMMENT,/^\/\/.*?[\n\r]/,null],[PR.PR_COMMENT,/^\/\*[\s\S]*?(?:\*\/|$)/,null],[PR.PR_PUNCTUATION,/^<<=|<=|<<|>>=|>=|>>|===|==|\.\.\.|&&=|\.\.<|!==|!=|&=|~=|~|\(|\)|\[|\]|{|}|@|#|;|\.|,|:|\|\|=|\?\?|\|\||&&|&\*|&\+|&-|&=|\+=|-=|\/=|\*=|\^=|%=|\|=|->|`|==|\+\+|--|\/|\+|!|\*|%|<|>|&|\||\^|\?|=|-|_/,null],[PR.PR_TYPE,/^\b(?:[@_]?[A-Z]+[a-z][A-Za-z_$@0-9]*|\w+_t\b)/,null]]),["swift"]);
+</script>
 <style>
 .pln{color:#1b181b}.str{color:#918b3b}.kwd{color:#7b59c0}.com{color:#9e8f9e}.typ{color:#516aec}.lit{color:#a65926}.clo,.opn,.pun{color:#1b181b}.tag{color:#ca402b}.atn{color:#a65926}.atv{color:#159393}.dec{color:#a65926}.var{color:#ca402b}.fun{color:#516aec}pre.prettyprint{background:#f7f3f7;color:#ab9bab;font-family:Menlo,Consolas,"Bitstream Vera Sans Mono","DejaVu Sans Mono",Monaco,monospace;font-size:12px;line-height:1.5;border:1px solid #d8cad8;padding:10px}ol.linenums{margin-top:0;margin-bottom:0}
 body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{font-size: 10pt;}a:link,a:visited{color:#00f}.codeblock_name,code,pre.prettyprint{font-family:Monaco,"Lucida Console",monospace}body{font-size:14pt}.codeblock_name,.math,.seealso,code{font-size:10pt}.codeblock{page-break-inside:avoid;padding-bottom:15px}.math{text-indent:0}pre.prettyprint{font-size:10pt;padding:10px;border-radius:10px;border:none;white-space:pre-wrap}.codeblock_name{margin-top:1.25em;display:block}a:link{text-decoration:none}a:link:not(.lit):hover{color:#00f;text-decoration:underline}a:link:active{color:red}h4{padding-right:1.25em}h4.noheading{margin-bottom:0}h1{text-align:center}code{padding:2px}pre{-moz-tab-size:4;-o-tab-size:4;tab-size:4}p:not(.notp){margin:0;text-indent:2em}.two-col{list-style-type:none}.two-col li:before{content:'-';padding:5px;margin-right:5px;color:orange;background-color:#fff;display:inline-block}@media print{body{font-size:10pt}pre.prettyprint{font-size:8pt}.seealso{font-size:9pt}.codeblock_name,.math,code{font-size:8pt}.math{text-indent:0}}
-</style>
+ body {
+	font-family: Helvetica, sans-serif;
+}
+
+p {
+	text-indent: 0!important;
+	margin-bottom: 1em!important;;
+}
+
+h4 {
+	font-size: 20px;
+}
+
+.subtitle {
+	font-weight: 400;
+	font-size: 22px;
+}
+
+.center {
+	text-align: center;
+	margin: 0 auto;
+	display: block;
+}</style>
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>AsciiMath to LaTeX in Swift</h1>
+<h1>AsciiMath to LaTeX Converter</h1>
 <a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
-<p><strong>intro here</strong>
+<p>The proposed project takes a math equation written in <a href="http://asciimath.org">AsciiMath</a>
+as input and converts it into valid LaTeX source. The tool first parses the AsciiMath input, outputting syntax errors 
+as they are encountered. It then generates an AST representing the equation which is converted into LaTeX math notation
+and output as text to the console.
 </p>
-<p>The entry point to the program, our main file will take in the input equation, and initiate the
-classes to lex, parse, and convert it.
+<p>The purpose of the project is to allow for a simpler, more readable syntax for math equations to be used with 
+the superior typesetting abilities of LaTeX. 
+</p>
+<p>In terms of formatting, LaTeX is unparalleled for complex math equations. As such, it has become the industry 
+standard and is widely used and supported throughout academia and in math-related fields. Personally, I've
+been using LaTeX for several years and continue to use it to format math equations and take notes.
+</p>
+<p>However, the syntax to write these math equations is verbose, difficult-to-read, and slow to type. AsciiMath is
+a language that implements a subset of LaTeX's math functionality and is used for displaying math equations in
+HTML documents. It uses a much simpler syntax that prefers spaces and parentheses over braces and 
+backslashes and saves the user keystrokes by requiring less explicit instructions.
+</p>
+
+</div>
+<a name="1:2"><div class="section"><h4>2. File Structure</h4></a>
+<p>The entry point to the program, our main file will take in the AsciiMath equation from stdin, and initialize the
+the parsing process. If the parser is successful, the LaTeX output will then be printed to the console. Note that 
+this file acts as a script, and is not encapsulated in a class. As such, the lines will be executed sequentially
+starting from the top.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>main.swift</strong> <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
-<span class="nocode pln">{Imports, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<span class="nocode pln">{Read input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="codeblock_name">{<strong>main.swift</strong> <a href="AsciiMathToLatex.html#1:2">2</a>}</span>
+<pre class="prettyprint lang-swift">
+<span class="nocode pln">{Imports, <a href="AsciiMathToLatex.html#1:3">3</a>}</span>
+<span class="nocode pln">{Process input, <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<span class="nocode pln">{Print output, <a href="AsciiMathToLatex.html#1:6">6</a>}</span>
 </pre>
 
 
 
 </div>
-<p>We will need the core functionality of Foundation for string processing and reading from stdin.
+</div>
+<a name="1:3"><div class="section"><h4>3. Imports</h4></a>
+<p>The input is read from stdin, which requires the Foundation package.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Imports <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Imports <a href="AsciiMathToLatex.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 import Foundation
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
 </div>
-<p>Read the equation from stdin and save it.
+</div>
+<a name="1:4"><div class="section"><h4>4. Processing Input</h4></a>
+<p>Initially, the program will read the equation from stdin and save it to <code>inputData</code> before initializing the parsing process.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Read input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Process input <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 let stdin = NSFileHandle.fileHandleWithStandardInput()
 let inputData = stdin.availableData;
-<span class="nocode pln">{Check input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<span class="nocode pln">{Parse input, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<span class="nocode pln">{Print output, <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
+<span class="nocode pln">{Check input, <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<span class="nocode pln">{Parse input, <a href="AsciiMathToLatex.html#1:5">5</a>}</span>
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
 </div>
 <p>Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
 user and exit if no input was passed.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Check input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Check input <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 let rawInputText = NSString(data: inputData, encoding: NSUTF8StringEncoding)
 if (rawInputText == nil) {
     println("Usage: 'echo 'x + y' | ./main")
@@ -102,41 +151,48 @@ if (rawInputText == nil) {
 }
 
 let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+println("AsciiMath Equation:")
+println(asciiMathText)
 </pre>
 
 
 
 </div>
-<p>At this point, our input equation is ready for our lexing and parsing operations. 
-Firstly, we create a new parser object.
+</div>
+<a name="1:5"><div class="section"><h4>5. Parsing input</h4></a>
+<p>At this point, our input equation is ready for parsing. We create a new parser object with the input equation,
+and it then parses the input. If an error was encountered, the program exits. Note that the actual precise (and more useful)
+error is output to the console during the parsing process.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Parse input <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Parse input <a href="AsciiMathToLatex.html#1:5">5</a>}</span>
+<pre class="prettyprint lang-swift">
 let parser = Parser(amEquation: asciiMathText)
 if !parser.parseInput() {
-	println(parser.errorMessage)
+	println("Error parsing equation '\(asciiMathText)'. Exiting...")
 	exit(2)
 }
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:4">4</a></p>
 </div>
-<p>Once the input's been parsed and an AST has been generated, convert to LaTeX and print it out.
+</div>
+<a name="1:6"><div class="section"><h4>6. Outputting LaTeX</h4></a>
+<p>Once the input's been parsed and an AST has been generated, we call the appropriate method on our parser to convert
+its AST to LaTeX and print it to the console. After this is done, the program exits.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Print output <a href="AsciiMathToLatex.html#1:1">1</a>}</span>
-<pre class="prettyprint">
-let latexOutput = parser.convertToLatex()
-println("LaTeX output:")
-println(latexOutput)
+<span class="codeblock_name">{Print output <a href="AsciiMathToLatex.html#1:6">6</a>}</span>
+<pre class="prettyprint lang-swift">
+println("LaTeX Equation:")
+println(parser.convertToLatex())
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
 </div>
 
 </div>

@@ -1,21 +1,7 @@
-@title AsciiMath to LaTeX Lexer in Swift (SC.py)
+@title Lexer | AsciiMath to LaTeX
 
 @introduction
 Intro here.
-
-@s Grammar
---- Grammar definition
-/* AsciiMath grammar
-v ::= [A-Za-z] | greek letters | numbers | other constant symbols
-u ::= sqrt | text | bb | other unary symbols for font commands
-b ::= frac | root | stackrel
-l ::= ( | [ | { | (: | {:
-r ::= ) | ] | } | :) | :}
-S ::= v | lEr | uS | bSS
-I ::= S_S | S^S | S_S^S | S
-E ::= IE | I/I  
-*/
----
 
 @s Class definition
 --- lexer.swift
@@ -29,17 +15,16 @@ class Lexer {
 ---
 
 --- Member variables
-let amEquation: String!
+private let amEquation: String!
+private let allSymbols: [String]!
 var currentIndex: Int = 0
-
-let allSymbols: [String]!
 ---
 
 --- Symbols
 let unarySymbols = ["sqrt", "text", "bb","hat","bar","ul","vec","dot","ddot"]
 let binarySymbols = ["frac", "root", "stackrel"]
-let leftDelimeters = ["(", "[", "{"]
-let rightDelimeters = [")", "]", "}"]
+let leftDelimiters = ["(", "[", "{"]
+let rightDelimiters = [")", "]", "}"]
 let expressionSymbols = ["^", "_", "/"]
 
 // constants
@@ -63,7 +48,7 @@ let arrowSymbols = ["uarr","darr","rarr","->","|->","larr","harr","rArr","lArr",
 init(amEquation: String) {
 	self.amEquation = amEquation
 
-	allSymbols = [unarySymbols, binarySymbols, leftDelimeters, rightDelimeters, expressionSymbols,
+	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
 				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
 }
 ---
@@ -90,16 +75,16 @@ func getNextSymbol() -> String? {
 				currentIndex++
 				nextChar = peekNextCharacter()
 			}
-		} 
+		}
 		return currentSymbol
 	}
 }
 
-func getMulticharSymbol() -> String? {
+private func getMulticharSymbol() -> String? {
 	var longestMatch = ""
 	for symbol in allSymbols {
 		let symLength = count(symbol)
-		if currentIndex + symLength < count(amEquation)
+		if currentIndex + symLength <= count(amEquation)
 		&& amEquation[currentIndex-1..<currentIndex+symLength-1] == symbol
 		&& symLength > count(longestMatch) {
 			longestMatch = amEquation[currentIndex-1..<currentIndex+symLength-1]

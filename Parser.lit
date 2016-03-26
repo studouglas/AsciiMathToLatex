@@ -1,57 +1,65 @@
-@title AsciiMath to LaTeX Parser in Swift (P0.py)
+@title Parser | AsciiMath to LaTeX
 
 @s Introduction
-**intro here**
+The parser is initialized with the AsciiMath equation (as text), and encapsulates functionality
+related to generating a structured representation of the equation and converting that structure
+to LaTeX. The structure is derived from the grammar definition (in BNR form) presented below.
 
 @s Grammar
+The following is a (slightly) modified version of the AsciiMath grammar from the [AsciiMath](http://asciimath.org)
+webpage. To the right of the grammar rules are more readable names for each type of symbol, which will
+be used throughout the program. Note also that for the constant and unary symbols there are far too 
+many to be listed below, the full list can be found on the [AsciiMath](http://asciimath.org) homepage.
 --- Grammar definition
-/* AsciiMath grammar
+AsciiMath grammar (BNR)
 c ::= [A-Za-z] | greek letters | numbers | other constant symbols    constantSymbols
 u ::= sqrt | text | bb | other unary symbols for font commands       unarySymbols
 b ::= frac | root | stackrel                                         binarySymbols
-l ::= ( | [ | { | (: | {:                                            leftBrackets
-r ::= ) | ] | } | :) | :}                                            rightBrackets
+l ::= ( | [ | { | (: | {:                                            leftDelimiters
+r ::= ) | ] | } | :) | :}                                            rightDelimiters
 S ::= c | lEr | uS | bSS                                             simpleExpression
-E ::= SE | S/S | S_S | S^S | S_S^S | S                               expression
-*/
+E ::= SE | S/S | S_S | S^S | S_S^S | S | EE                          expression
 ---
 
+@s Class Structure
+The parser class maintains several member variables and exposes two functions in its interface to parse the
+equation and to convert it to LaTeX. 
 --- parser.swift
-@{Imports}
 class Parser {
 	@{Member variables}
 	@{Constructor}
 	@{Parse input}
 	@{Convert to latex}
-	@{Process next expression}
+	@{Private functions}
+	
 }
 ---
 
-We will need the core functionality of Foundation for string processing and reading from stdin.
---- Imports
-import Foundation
----
-
-The class will be initialized with a string representing the AsciiMath equation.
+@s Initialization &amp; Member Variables
+The class will be initialized with a string representing the AsciiMath equation, and will initialize
+its own Lexer with that same equation. It was decided to keep the Lexer a private object of the parser
+to simplify the interface, and to adhere to the principle of "information hiding". Since the
+caller doesn't <emph>need</emph> to know about the lexer, it is kept hidden behind the parser's interface.
 --- Constructor
 init(amEquation: String) {
-    println("Parser initialized with: '\(amEquation)'")
     self.amEquation = amEquation
     self.lexer = Lexer(amEquation: amEquation)
 }
 ---
 
-The parser will need to keep track of several global variables.
+The parser will keep a copy of the equation as well as a Lexer object which will both be initialized as soon as the
+Parser is. Additionally, the root node of the generated AST will be stored in `astRoot` once parsing is completed.
+If parsing fails, the `astRoot` will be nil.
 --- Member variables
-var errorMessage: String = ""
-var amEquation: String = ""
-var astRoot: Expression?
-var lexer: Lexer!
+private let amEquation: String!
+private var lexer: Lexer!
+private var astRoot: Expression?
 ---
 
-This function will parse the input, and return false if an error is encountered, also setting
-a member variable with the error string before returning false. If no error is encountered, true
-will be returned.
+@s Parsing Input
+This function will parse the input, returning false if an error is encountered, and true otherwise. If the parsing is
+successful, the member variable `astRoot` will store the value of the root node of the AST. Note that the core functionality
+of the parser is not in this function, but the `getNextExpression` function instead.
 --- Parse input
 func parseInput() -> Bool {
 	astRoot = getNextExpression()
@@ -65,11 +73,23 @@ func parseInput() -> Bool {
 }
 ---
 
-Once the input is validated and parsed, the AST needs to be converted to LaTeX source code.
+@s Converting to LaTeX
+Once the input is validated and parsed, the AST needs to be converted to LaTeX source code. There are several
+of "cleanup" steps that need to be performed (removing extra spaces, using parentheses that match the equation height etc.).
+Once the cleanup steps have completed, the resulting LaTeX string is returned.
 --- Convert to latex
 func convertToLatex() -> String {
 	if astRoot != nil {
-		return astRoot!.toLatexString()
+		var latexStr = astRoot!.toLatexString()
+		latexStr = latexStr.stringByReplacingOccurrencesOfString("  ", withString: " ")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString("{(", withString: "{")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString(")}", withString: "}")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString(" }", withString: "}")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString(" _", withString: "_")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString(" ^", withString: "^")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString("(", withString: "\\left(")
+		latexStr = latexStr.stringByReplacingOccurrencesOfString(")", withString: "\\right)")
+		return latexStr
 	} else {
 		println("Error converting to LaTeX. AST is nil.")
 		return ""
@@ -77,142 +97,179 @@ func convertToLatex() -> String {
 }
 ---
 
---- Process next expression
+@s Private Functions
+The two private functions for getting the next expression or simple expression contain the core functionality
+of the Parser. These functions use the AsciiMath grammar to generate an AST representing the input equation.
+--- Private functions
 @{Get next simple expression}
 @{Get next expression}
 ---
 
+@s Simple Expression
+This function will return the next simple expression in the text, as per the grammar definition. If no simple expression
+follows the current location in the string, or if an error is encountered, `nil` is returned.
 --- Get next simple expression
-func getNextSimpleExpression() -> SimpleExpression? {
+private func getNextSimpleExpression() -> SimpleExpression? {
 	var currentSymbolOpt = lexer.getNextSymbol()
 	if currentSymbolOpt == nil {
-		println("Error. Expected symbol in getNextSimpleExpression")
+		println("Error. Expected symbol in simple expression")
 		return nil
 	}
 	if contains(expressionSymbols, currentSymbolOpt!) {
 		currentSymbolOpt = lexer.getNextSymbol()
 		if (currentSymbolOpt == nil) {
-			println("Error. Expected non-nil symbol after /,_,^ in getNextSimpleExpression")
+			println("Error. Expected symbol after expression operator")
 			return nil
 		}
 	}
 	let currentSymbol = currentSymbolOpt!
-	
-	// lEr
-	if contains(leftDelimeters, currentSymbol) {
-		if let nextExpression = getNextExpression() {
-			let delimType = BracketType(str: currentSymbol)
-			if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-				return DelimitedSE(expr: nextExpression, bracketType: delimType)
-			} else {
-				println("Error. '\(delimType.rightString())' expected after expression.")
-				return nil
-			} 
-		} else {
-			println("Error. expected expression after '\(currentSymbol)'")
-			return nil
-		}
-	}
-		
-	// uS
-	else if contains(unarySymbols, currentSymbol) {
-		if let nextSimpleExpression = getNextSimpleExpression() {
-			return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
-		} else {
-			println("Error. simple expression expected after \(currentSymbol)")
-			return nil
-		}
-	}
-	
-	// bSS
-	else if contains(binarySymbols, currentSymbol) {
-		if let nextSimpleExpression = getNextSimpleExpression() {
-			if let finalSimpleExpression = getNextSimpleExpression() {
-				return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
-			} else {
-				println("Error. Simple expression expected after '\(currentSymbol)'")
-				return nil	
-			}
-		} else {
-			println("Error. Simple expression expected after '\(currentSymbol)'")
-			return nil
-		}
-	}
-	
-	// c
-	else {
+
+	if contains(leftDelimiters, currentSymbol) {
+		@{Parse lEr rule}
+	} else if contains(unarySymbols, currentSymbol) {
+		@{Parse uS rule}
+	} else if contains(binarySymbols, currentSymbol) {
+		@{Parse bSS rule}
+	} else {
 		return ConstantSE(str: currentSymbol)
 	}
 }
 ---
 
+If we are matching to the `lEr` rule (an expression delimited by brackets, braces or parentheses) we need to ensure
+that after we have the `E`, the correct closing delimiter occurs. If this is indeed the case (as it should be), we want
+to ignore that closing delimiter by increasing the lexer's current location in the string.
+--- Parse lEr rule
+if let nextExpression = getNextExpression() {
+	let delimType = BracketType(str: currentSymbol)
+	if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
+		lexer.currentIndex++
+		return DelimitedSE(expr: nextExpression, bracketType: delimType)
+	} else {
+		println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
+		return nil
+	} 
+} else {
+	println("Error. expected expression after '\(currentSymbol)'")
+	return nil
+}
+---
+
+A unary operator followed by a simple expression is a relatively straightforward case. The only possible error is if
+there is not a simple expression following the operator.
+--- Parse uS rule
+if let nextSimpleExpression = getNextSimpleExpression() {
+	return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
+} else {
+	println("Error. Simple expression expected after '\(currentSymbol)'")
+	return nil
+}
+---
+
+The binary operator is a similar case to the unary operator, except that we require 
+two simple expressions to follow the operator.
+--- Parse bSS rule
+if let nextSimpleExpression = getNextSimpleExpression(), 
+	   finalSimpleExpression = getNextSimpleExpression() {
+	return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
+} else {
+	println("Error. Simple expression expected after '\(currentSymbol)'")
+	return nil
+}
+---
+
+@s Expression
+Parsing expressions is a little more complex than simple expressions (as can be expected). All parse rules for 
+expressions start with a simple expression (except `EE`, but that's a special case). So firstly we get the next
+simple expression and verify it is non-nil. We then check the character following that simple expression. If we're
+at the end of our string or it's a right delimiter, we just return the simple expression we fetched initially. If
+it is not one of the special expression symbols ['_','^','/'], then it must be the beginning of a new expression, i.e.
+the `SE` rule in our grammar. In all these cases, the appropriate Expression object is returned and the function exits.
+
+After addressing all those cases, we know that the next expression must be a fraction or a sub/super-script. When we
+parse this, we do generate the Expression object representing it, but do not return it immediately. This is because 
+we must check if there is another expression following it. If there is, we return a sequence expression consisting of the first
+fraction or sub/super-script expression followed by the next expression (which could be any of the possible expression types).
+
+
 --- Get next expression
-func getNextExpression() -> Expression? {
+private func getNextExpression() -> Expression? {
 	let simpleExpressionOpt = getNextSimpleExpression()
 	if (simpleExpressionOpt == nil) {
-		println("Next simpleExpression nil in getNextExpression")
 		return nil
 	}
 	let simpleExpression = simpleExpressionOpt!
 	var currentExpression: Expression?
-	let nextCharacter = lexer.peekNextCharacter()
-	
-	// S
-	if nextCharacter == nil || contains(rightDelimeters, String(nextCharacter!)) {
+	var nextCharacter = lexer.peekNextCharacter()
+
+	if nextCharacter == nil || contains(rightDelimiters, String(nextCharacter!)) {
 		return SimpleExpressionE(simpleExpr: simpleExpression)
 	}
 	
-	// SE
 	if !contains(expressionSymbols, String(nextCharacter!)) {
-		if let nextExpression = getNextExpression() {
-			return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
-		} else {
-			println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
-			return nil
-		}
+		@{Parse SE rule}
 	}
 	
 	if let nextSimpleExpression = getNextSimpleExpression() {
-		switch (nextCharacter!) {
-		// S/S
+		switch (nextCharacter!) {		
 		case "/":
 			currentExpression = FractionE(top: simpleExpression, bottom: nextSimpleExpression)
 
 		case "_":
-			// S_S^S
 			if (lexer.peekNextCharacter() == "^") {
-				if let finalSimpleExpression = getNextSimpleExpression() {
-					currentExpression = SubSuperscriptE(base: simpleExpression, sub: nextSimpleExpression, superscript: finalSimpleExpression)	
-				} else {
-					println("Error. Simple expression expected following '\(simpleExpression.toString())_\(nextSimpleExpression.toString())^'")
-					return nil
-				}
-				
-			} 
-			// S_S
-			else {
+				@{Parse S_S^S rule}
+			} else {
 				currentExpression = SubscriptE(base: simpleExpression, sub: nextSimpleExpression)
 			}
-		
-		// S^S
+
 		case "^":
 			currentExpression = SuperscriptE(base: simpleExpression, superscript: nextSimpleExpression)
 		
 		default: break
 		}
 
-		// EE
-		if currentExpression != nil && lexer.currentIndex < count(amEquation) - 1 {
-			if let nextE = getNextExpression() {
-				return SequenceExprE(e1: currentExpression!, e2: nextE)
-			} else {
-				println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
-				return currentExpression
-			}
-		}
+		@{Check for EE rule}
+		
 	}
-
 	return currentExpression
 }
 ---
 
+The most common type of expression consists of a simple expression followed by another expression. In this case, the
+only possible error (since we already verified the simple expression) would be no expression following it.
+--- Parse SE rule
+if let nextExpression = getNextExpression() {
+	return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
+} else {
+	println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
+	return nil
+}
+---
+
+This is a more complex case of sub or superscript. Note that the subscript must come first, as per AsciiMath standard. The
+possible error (since we've already verified the first two simple expressions) is that the third simple expression, the superscript,
+does not exist.
+--- Parse S_S^S rule
+if let finalSimpleExpression = getNextSimpleExpression() {
+	currentExpression = SubSuperscriptE(base: simpleExpression, sub: nextSimpleExpression, superscript: finalSimpleExpression)	
+} else {
+	println("Error. Simple expression expected following '\(simpleExpression.toString())_\(nextSimpleExpression.toString())^'")
+	return nil
+}
+---
+
+If we haven't reached the end of our string, there is a possibility that there is another expression following the
+one we just parsed. If this is the case, we return the appropriate sequence expression. We must also check that the
+next character is not a right delimiter, as right delimiters indicate the end of an expression contained within the 
+`lEr` simple expression rule.
+--- Check for EE rule
+if currentExpression != nil && lexer.currentIndex < count(amEquation) - 1
+&& !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
+	if let nextE = getNextExpression() {
+		return SequenceExprE(e1: currentExpression!, e2: nextE)
+	} else {
+		println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
+		return currentExpression
+	}
+}
+---

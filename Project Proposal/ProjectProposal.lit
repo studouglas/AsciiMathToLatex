@@ -7,7 +7,7 @@
 
 @s Overview
 The proposed project takes a math equation written in [AsciiMath](http://asciimath.org)
-as input and converts it into valid LaTeX source. The tool first lexes the AsciiMath input, outputting syntax errors 
+as input and converts it into valid LaTeX source. The tool first parses the AsciiMath input, outputting syntax errors 
 as they are encountered. It then generates an AST representing the equation which is converted into LaTeX math notation and output as text.
 
 The purpose of the project is to allow for a simpler, more readable syntax for math equations to be used with 

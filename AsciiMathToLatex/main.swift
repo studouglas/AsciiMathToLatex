@@ -9,16 +9,17 @@ if (rawInputText == nil) {
 }
 
 let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+println("AsciiMath Equation:")
+println(asciiMathText)
 
 let parser = Parser(amEquation: asciiMathText)
 if !parser.parseInput() {
-	println(parser.errorMessage)
+	println("Error parsing equation '\(asciiMathText)'. Exiting...")
 	exit(2)
 }
 
-let latexOutput = parser.convertToLatex()
-println("LaTeX output:")
-println(latexOutput)
 
+println("LaTeX Equation:")
+println(parser.convertToLatex())
 
 

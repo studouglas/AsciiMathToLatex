@@ -1,13 +1,12 @@
 class Lexer {
-	let amEquation: String!
+	private let amEquation: String!
+	private let allSymbols: [String]!
 	var currentIndex: Int = 0
-	
-	let allSymbols: [String]!
 
 	init(amEquation: String) {
 		self.amEquation = amEquation
 	
-		allSymbols = [unarySymbols, binarySymbols, leftDelimeters, rightDelimeters, expressionSymbols,
+		allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
 					  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
 	}
 
@@ -31,16 +30,16 @@ class Lexer {
 					currentIndex++
 					nextChar = peekNextCharacter()
 				}
-			} 
+			}
 			return currentSymbol
 		}
 	}
 	
-	func getMulticharSymbol() -> String? {
+	private func getMulticharSymbol() -> String? {
 		var longestMatch = ""
 		for symbol in allSymbols {
 			let symLength = count(symbol)
-			if currentIndex + symLength < count(amEquation)
+			if currentIndex + symLength <= count(amEquation)
 			&& amEquation[currentIndex-1..<currentIndex+symLength-1] == symbol
 			&& symLength > count(longestMatch) {
 				longestMatch = amEquation[currentIndex-1..<currentIndex+symLength-1]
@@ -74,8 +73,8 @@ class Lexer {
 }
 let unarySymbols = ["sqrt", "text", "bb","hat","bar","ul","vec","dot","ddot"]
 let binarySymbols = ["frac", "root", "stackrel"]
-let leftDelimeters = ["(", "[", "{"]
-let rightDelimeters = [")", "]", "}"]
+let leftDelimiters = ["(", "[", "{"]
+let rightDelimiters = [")", "]", "}"]
 let expressionSymbols = ["^", "_", "/"]
 
 // constants

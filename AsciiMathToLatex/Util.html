@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>AsciiMath to LaTeX Utilities in Swift</title>
+<title>Utilities | AsciiMath to LaTeX</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -42,48 +42,42 @@ body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{fo
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>AsciiMath to LaTeX Utilities in Swift</h1>
+<h1>Utilities | AsciiMath to LaTeX</h1>
 <a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
-<p>Some utility functions to simplify program.
+<p>A common task used in the program is to look at specific characters 
+within a string, and ranges of the string. To simplify this, an extension
+to the String class adds subscript functionality to improve the syntax of
+performing these operations.
 </p>
 
 </div>
-<a name="1:2"><div class="section"><h4>2. Description</h4></a>
-<p>Desc. here
+<a name="1:2"><div class="section"><h4>2. Module Structure</h4></a>
+<p>The utility functions are applied as extensions to the built-in String class, so
+they may be used on standard Strings.
 </p>
 
 <div class="codeblock">
 <span class="codeblock_name">{<strong>util.swift</strong> <a href="Util.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-<span class="nocode pln">{String utilities, <a href="Util.html#1:2">2</a>}</span>
-</pre>
-
-
-
-</div>
-
-<div class="codeblock">
-<span class="codeblock_name">{String utilities <a href="Util.html#1:2">2</a>}</span>
-<pre class="prettyprint">
 extension String {
-<span class="nocode pln">	{Access characters with subscript, <a href="Util.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Subscript strings, <a href="Util.html#1:3">3</a>}</span>
 }
 </pre>
 
 
 
 </div>
-<p>Note: these are UNSAFE with non-ascii strings. Switching to newer version of swift will solve this.
+</div>
+<a name="1:3"><div class="section"><h4>3. Subscript Strings</h4></a>
+<p>The following to methods provide a simplified syntax for accessing a character 
+at a given index in a string, and to access a substring of a string.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Access characters with subscript <a href="Util.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Subscript strings <a href="Util.html#1:3">3</a>}</span>
 <pre class="prettyprint">
 subscript(i: Int) -&gt; Character {
 	return Array(self)[i]	
-}
-subscript(i: Int) -&gt; String {
-	return String(Array(self)[i])
 }
 subscript(r: Range&lt;Int&gt;) -&gt; String {
 	return String(Array(self)[r.startIndex ..&lt; r.endIndex])
@@ -91,7 +85,7 @@ subscript(r: Range&lt;Int&gt;) -&gt; String {
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="Util.html#1:2">2</a></p>
 </div>
 
 </div>

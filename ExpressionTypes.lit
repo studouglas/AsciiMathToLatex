@@ -1,4 +1,4 @@
-@title Different types of expressions (i.e. rules in grammar)
+@title Types of Expressions | AsciiMath to LaTeX
 
 @s Description
 desc goes here.
@@ -50,7 +50,13 @@ struct DelimitedSE: SimpleExpression {
 		return "\(bracketType.leftString())\(expression.toString())\(bracketType.rightString())"
 	}
 	func toLatexString() -> String {
-		return "\(bracketType.leftString())\(expression.toLatexString())\(bracketType.rightString())"
+		var leftDelim = bracketType.leftString()
+		var rightDelim = bracketType.rightString()
+		if bracketType == .Brace {
+			leftDelim = "\\{"
+			rightDelim = "\\}"
+		}
+		return "\(leftDelim)\(expression.toLatexString())\(rightDelim)"
 	}
 }
 struct UnarySE: SimpleExpression {

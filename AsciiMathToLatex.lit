@@ -17,7 +17,6 @@ import Foundation
 
 Read the equation from stdin and save it.
 --- Read input
-println("Processing input...")
 let stdin = NSFileHandle.fileHandleWithStandardInput()
 let inputData = stdin.availableData;
 @{Check input}
@@ -35,7 +34,6 @@ if (rawInputText == nil) {
 }
 
 let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-println("AsciiMath Equation: '\(asciiMathText)'")
 ---
 
 At this point, our input equation is ready for our lexing and parsing operations. 
@@ -46,7 +44,6 @@ if !parser.parseInput() {
 	println(parser.errorMessage)
 	exit(2)
 }
-println("Parsed input successfully!")
 ---
 
 Once the input's been parsed and an AST has been generated, convert to LaTeX and print it out.

@@ -77,8 +77,8 @@ class Parser {
 <span class="nocode pln">	{Constructor, <a href="Parser.html#1:2">2</a>}</span>
 <span class="nocode pln">	{Parse input, <a href="Parser.html#1:2">2</a>}</span>
 <span class="nocode pln">	{Convert to latex, <a href="Parser.html#1:2">2</a>}</span>
+<span class="nocode pln">	{Process next expression, <a href="Parser.html#1:2">2</a>}</span>
 }
-<span class="nocode pln">{Custom types, <a href="Parser.html#1:2">2</a>}</span>
 </pre>
 
 
@@ -105,6 +105,7 @@ import Foundation
 init(amEquation: String) {
     println("Parser initialized with: '\(amEquation)'")
     self.amEquation = amEquation
+    self.lexer = Lexer(amEquation: amEquation)
 }
 </pre>
 
@@ -119,6 +120,8 @@ init(amEquation: String) {
 <pre class="prettyprint">
 var errorMessage: String = ""
 var amEquation: String = ""
+var astRoot: Expression?
+var lexer: Lexer!
 </pre>
 
 
@@ -133,204 +136,13 @@ will be returned.
 <span class="codeblock_name">{Parse input <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 func parseInput() -&gt; Bool {
-	let lexer = Lexer(amEquation: amEquation)
-	var root: Expression? = lexer.getNextExpression()
-	if let r = root {
-		println("Done lexing, we now have our root expression!:\n")
-		println(r.toString())
-		println("\nAnd our LaTeX output:\n")
-		println(r.toLatexString())
-	} else {
-		println("Root is nil")
-	}
-	return true
-}
-</pre>
-
-
-
-</div>
-
-<div class="codeblock">
-<span class="codeblock_name">{Custom types <a href="Parser.html#1:2">2</a>}</span>
-<pre class="prettyprint">
-<span class="nocode pln">{Bracket type, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">{Simple expression type, <a href="Parser.html#1:2">2</a>}</span>
-<span class="nocode pln">{Expression type, <a href="Parser.html#1:2">2</a>}</span>
-</pre>
-
-
-
-</div>
-
-<div class="codeblock">
-<span class="codeblock_name">{Simple expression type <a href="Parser.html#1:2">2</a>}</span>
-<pre class="prettyprint">
-protocol SimpleExpression {
-	func toString() -&gt; String
-	func toLatexString() -&gt; String
-}
-struct ConstantSE: SimpleExpression {
-	var str = ""
-	init(str: String) {
-		self.str = str
-	}
-	func toString() -&gt; String {
-		return str
-	}
-	func toLatexString() -&gt; String {
-		return str
-	}
-}
-struct DelimitedSE: SimpleExpression {
-	var expression: Expression!
-	var bracketType: BracketType!
+	astRoot = getNextExpression()
 	
-	init(expr: Expression, bracketType: BracketType) {
- 		self.expression = expr
- 		self.bracketType = bracketType
-	}
-	func toString() -&gt; String {
-		return "\(bracketType.leftString())\(expression.toString())\(bracketType.rightString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(bracketType.leftString())\(expression.toLatexString())\(bracketType.rightString())"
-	}
-}
-
-struct UnarySE: SimpleExpression {
-	var simpleExpression: SimpleExpression
-	var unaryOperator = ""
-
-	init(op: String, simpleExpr: SimpleExpression) {
-		self.unaryOperator = op
-		self.simpleExpression = simpleExpr
-	}
-	func toString() -&gt; String {
-		return "\(unaryOperator)\(simpleExpression.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\\\(unaryOperator){\(simpleExpression.toLatexString())}"
-	}
-}
-
-struct BinarySE: SimpleExpression {
-	var simpleExpressionLeft: SimpleExpression
-	var simpleExpressionRight: SimpleExpression
-	var binaryOperator = ""
-
-	init(op: String, leftSE: SimpleExpression, rightSE: SimpleExpression) {
-		self.binaryOperator = op
-		self.simpleExpressionLeft = leftSE
-		self.simpleExpressionRight = rightSE
-	}
-	func toString() -&gt; String {
-		return "\(binaryOperator)\(simpleExpressionLeft.toString())\(simpleExpressionRight.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\\\(binaryOperator){\(simpleExpressionLeft.toLatexString())}{\(simpleExpressionRight.toLatexString())}"
-	}
-}
-</pre>
-
-
-
-</div>
-
-<div class="codeblock">
-<span class="codeblock_name">{Expression type <a href="Parser.html#1:2">2</a>}</span>
-<pre class="prettyprint">
-protocol Expression {
-	func toString() -&gt; String
-	func toLatexString() -&gt; String
-}
-struct SimpleExpressionE: Expression {
-	var simpleExpression: SimpleExpression
-	init(simpleExpr: SimpleExpression) {
-		self.simpleExpression = simpleExpr
-	}
-	func toString() -&gt; String {
-		return simpleExpression.toString()
-	}
-	func toLatexString() -&gt; String {
-		return simpleExpression.toLatexString()
-	}
-}
-struct SequenceE: Expression {
-	var simpleExpression: SimpleExpression
-	var expression: Expression
-
-	init(simpleExpr: SimpleExpression, expr: Expression) {
-		self.simpleExpression = simpleExpr
-		self.expression = expr
-	}
-	func toString() -&gt; String {
-		return "\(simpleExpression.toString())\(expression.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(simpleExpression.toLatexString())\(expression.toLatexString())"
-	}
-}
-struct FractionE: Expression {
-	var simpleExpressionTop: SimpleExpression
-	var simpleExpressionBottom: SimpleExpression
-
-	init(top: SimpleExpression, bottom: SimpleExpression) {
-		self.simpleExpressionTop = top
-		self.simpleExpressionBottom = bottom
-	}
-	func toString() -&gt; String {
-		return "\(simpleExpressionTop.toString())/\(simpleExpressionBottom.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\\frac{\(simpleExpressionTop.toLatexString())}{\(simpleExpressionBottom.toLatexString())}"
-	}
-}
-struct SubscriptE: Expression {
-	var simpleExpressionBase: SimpleExpression
-	var simpleExpressionSubscript: SimpleExpression
-
-	init(base: SimpleExpression, sub: SimpleExpression) {
-		self.simpleExpressionBase = base
-		self.simpleExpressionSubscript = sub
-	}
-	func toString() -&gt; String {
-		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}"
-	}
-}
-struct SuperscriptE: Expression {
-	var simpleExpressionBase: SimpleExpression
-	var simpleExpressionSuperscript: SimpleExpression
-
-	init(base: SimpleExpression, superscript: SimpleExpression) {
-		self.simpleExpressionBase = base
-		self.simpleExpressionSuperscript = superscript
-	}
-	func toString() -&gt; String {
-		return "\(simpleExpressionBase.toString())^\(simpleExpressionSuperscript.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(simpleExpressionBase.toLatexString())^{\(simpleExpressionSuperscript.toLatexString())}"
-	}
-}
-struct SubSuperscriptE: Expression {
-	var simpleExpressionBase: SimpleExpression
-	var simpleExpressionSubscript: SimpleExpression
-	var simpleExpressionSuperscript: SimpleExpression
-
-	init(base: SimpleExpression, sub: SimpleExpression, superscript: SimpleExpression) {
-		self.simpleExpressionBase = base
-		self.simpleExpressionSubscript = sub
-		self.simpleExpressionSuperscript = superscript
-	}
-	func toString() -&gt; String {
-		return "\(simpleExpressionBase.toString())_\(simpleExpressionSubscript.toString())^\(simpleExpressionSuperscript.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}^{\(simpleExpressionSuperscript.toLatexString())}"
+	if astRoot != nil {
+		return true
+	} else {
+		println("Error parsing input. AST is nil.")
+		return false
 	}
 }
 </pre>
@@ -345,7 +157,12 @@ struct SubSuperscriptE: Expression {
 <span class="codeblock_name">{Convert to latex <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
 func convertToLatex() -&gt; String {
-	return ""
+	if astRoot != nil {
+		return astRoot!.toLatexString()
+	} else {
+		println("Error converting to LaTeX. AST is nil.")
+		return ""
+	}
 }
 </pre>
 
@@ -354,31 +171,175 @@ func convertToLatex() -&gt; String {
 </div>
 
 <div class="codeblock">
-<span class="codeblock_name">{Bracket type <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{Process next expression <a href="Parser.html#1:2">2</a>}</span>
 <pre class="prettyprint">
-enum BracketType {
-	case Paren, Bracket, Brace
-	func leftString() -&gt; String {
-		switch self {
-			case Paren:
-				return "("
-			case Bracket:
-				return "["
-			case Brace:
-				return "{"
+<span class="nocode pln">{Get next simple expression, <a href="Parser.html#1:2">2</a>}</span>
+<span class="nocode pln">{Get next expression, <a href="Parser.html#1:2">2</a>}</span>
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Get next simple expression <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+func getNextSimpleExpression() -&gt; SimpleExpression? {
+	// println("getNextSimpleExpression...")
+	var currentSymbolOpt = lexer.getNextSymbol()
+	if (currentSymbolOpt == nil) {
+		println("Error. Expected symbol in getNextSimpleExpression")
+		return nil
+	}
+	if (currentSymbolOpt! == "/" || currentSymbolOpt! == "_" || currentSymbolOpt! == "^") {
+		currentSymbolOpt = lexer.getNextSymbol()
+		if (currentSymbolOpt == nil) {
+			println("Error. Expected non-nil symbol after /,_/^ in getNextSimpleExpression")
+			return nil
 		}
 	}
-	func rightString() -&gt; String {
-		switch self {
-			case Paren:
-				return ")"
-			case Bracket:
-				return "]"
-			case Brace:
-				return "}"
+	let currentSymbol = currentSymbolOpt!
+	
+	switch (String(currentSymbol)) {
+		// lEr
+		case "[":
+			if let nextExpression = getNextExpression() {
+				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == "]" {
+					return DelimitedSE(expr: nextExpression, bracketType: .Bracket)
+				} else {
+					println("Error. ']' expected after expression.")
+					return nil
+				} 
+			} else {
+				println("Error. expected expression after '\(currentSymbol)'")
+				return nil
+			}
+		case "{":
+			if let nextExpression = getNextExpression() {
+				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == "}" {
+					return DelimitedSE(expr: nextExpression, bracketType:.Brace)
+				} else {
+					println("Error. '}' expected after expression.")
+					return nil
+				} 
+			} else {
+				println("Error. expected expression after '\(currentSymbol)'")
+				return nil
+			}
+		case "(":
+			if let nextExpression = getNextExpression() {
+				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == ")" {
+					return DelimitedSE(expr: nextExpression, bracketType:.Paren)
+				} else {
+					println("Error. ')' expected after expression. nextExpression = '\(nextExpression.toString())'")
+					return nil
+				} 
+			} else {
+				println("Error. expected expression after '\(currentSymbol)'")
+				return nil
+			}
+
+		// uS
+		case "sqrt","text","bb":
+			if let nextSimpleExpression = getNextSimpleExpression() {
+				return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
+			} else {
+				println("Error. simple expression expected after \(currentSymbol)")
+				return nil
+			}
+		
+		// bSS
+		case "frac","root","stackrel":
+			if let nextSimpleExpression = getNextSimpleExpression() {
+				if let finalSimpleExpression = getNextSimpleExpression() {
+					return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
+				} else {
+					println("Error. Simple expression expected after '\(currentSymbol)'")
+					return nil	
+				}
+			} else {
+				println("Error. Simple expression expected after '\(currentSymbol)'")
+				return nil
+			}
+		// c
+		default:
+			return ConstantSE(str: currentSymbol)
+	}
+}
+</pre>
+
+
+
+</div>
+
+<div class="codeblock">
+<span class="codeblock_name">{Get next expression <a href="Parser.html#1:2">2</a>}</span>
+<pre class="prettyprint">
+func getNextExpression() -&gt; Expression? {
+	let simpleExpressionOpt = getNextSimpleExpression()
+	if (simpleExpressionOpt == nil) {
+		println("Next simpleExpression nil in getNextExpression")
+		return nil
+	}
+	let simpleExpression = simpleExpressionOpt!
+	var currentExpression: Expression?
+	let nextCharacter = lexer.peekNextCharacter()
+	
+	// S
+	if (nextCharacter == nil || nextCharacter == ")") {
+		return SimpleExpressionE(simpleExpr: simpleExpression)
+	}
+	
+	// SE
+	if nextCharacter != "/" &amp;&amp; nextCharacter != "_" &amp;&amp; nextCharacter != "^" {
+		if let nextExpression = getNextExpression() {
+			return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
+		} else {
+			println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
+			return nil
+		}
+	}
+	
+	if let nextSimpleExpression = getNextSimpleExpression() {
+		switch (nextCharacter!) {
+		// S/S
+		case "/":
+			currentExpression = FractionE(top: simpleExpression, bottom: nextSimpleExpression)
+
+		case "_":
+			// S_S^S
+			if (lexer.peekNextCharacter() == "^") {
+				if let finalSimpleExpression = getNextSimpleExpression() {
+					currentExpression = SubSuperscriptE(base: simpleExpression, sub: nextSimpleExpression, superscript: finalSimpleExpression)	
+				} else {
+					println("Error. Simple expression expected following '\(simpleExpression.toString())_\(nextSimpleExpression.toString())^'")
+					return nil
+				}
+				
+			} 
+			// S_S
+			else {
+				currentExpression = SubscriptE(base: simpleExpression, sub: nextSimpleExpression)
+			}
+		
+		// S^S
+		case "^":
+			currentExpression = SuperscriptE(base: simpleExpression, superscript: nextSimpleExpression)
+		
+		default: break
+		}
+	}
+
+	if currentExpression != nil &amp;&amp; lexer.currentIndex &lt; count(amEquation) - 1 {
+		if let nextE = getNextExpression() {
+			return SequenceExprE(e1: currentExpression!, e2: nextE)
+		} else {
+			println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
+			return currentExpression
 			
 		}
 	}
+	return currentExpression
 }
 </pre>
 

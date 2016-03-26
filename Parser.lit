@@ -1,6 +1,9 @@
+@code_type Swift .swift
+@compiler swiftc
+@add_css literature_style_override.css
 @title Parser | AsciiMath to LaTeX
 
-@s Introduction
+@s Description
 The parser is initialized with the AsciiMath equation (as text), and encapsulates functionality
 related to generating a structured representation of the equation and converting that structure
 to LaTeX. The structure is derived from the grammar definition (in BNR form) presented below.
@@ -21,17 +24,16 @@ S ::= c | lEr | uS | bSS                                             simpleExpre
 E ::= SE | S/S | S_S | S^S | S_S^S | S | EE                          expression
 ---
 
-@s Class Structure
+@s Module Structure
 The parser class maintains several member variables and exposes two functions in its interface to parse the
 equation and to convert it to LaTeX. 
 --- parser.swift
 class Parser {
-	@{Member variables}
-	@{Constructor}
+	@{Parser member variables}
+	@{Parser constructor}
 	@{Parse input}
 	@{Convert to latex}
-	@{Private functions}
-	
+	@{Private functions}	
 }
 ---
 
@@ -40,7 +42,7 @@ The class will be initialized with a string representing the AsciiMath equation,
 its own Lexer with that same equation. It was decided to keep the Lexer a private object of the parser
 to simplify the interface, and to adhere to the principle of "information hiding". Since the
 caller doesn't <emph>need</emph> to know about the lexer, it is kept hidden behind the parser's interface.
---- Constructor
+--- Parser constructor
 init(amEquation: String) {
     self.amEquation = amEquation
     self.lexer = Lexer(amEquation: amEquation)
@@ -50,7 +52,7 @@ init(amEquation: String) {
 The parser will keep a copy of the equation as well as a Lexer object which will both be initialized as soon as the
 Parser is. Additionally, the root node of the generated AST will be stored in `astRoot` once parsing is completed.
 If parsing fails, the `astRoot` will be nil.
---- Member variables
+--- Parser member variables
 private let amEquation: String!
 private var lexer: Lexer!
 private var astRoot: Expression?
@@ -141,9 +143,9 @@ that after we have the `E`, the correct closing delimiter occurs. If this is ind
 to ignore that closing delimiter by increasing the lexer's current location in the string.
 --- Parse lEr rule
 if let nextExpression = getNextExpression() {
-	let delimType = BracketType(str: currentSymbol)
+	let delimType = DelimiterType(str: currentSymbol)
 	if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-		lexer.currentIndex++
+		lexer.currentLoc++
 		return DelimitedSE(expr: nextExpression, bracketType: delimType)
 	} else {
 		println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
@@ -239,7 +241,7 @@ The most common type of expression consists of a simple expression followed by a
 only possible error (since we already verified the simple expression) would be no expression following it.
 --- Parse SE rule
 if let nextExpression = getNextExpression() {
-	return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
+	return SimpleSequenceE(simpleExpr: simpleExpression, expr: nextExpression)
 } else {
 	println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
 	return nil
@@ -263,10 +265,10 @@ one we just parsed. If this is the case, we return the appropriate sequence expr
 next character is not a right delimiter, as right delimiters indicate the end of an expression contained within the 
 `lEr` simple expression rule.
 --- Check for EE rule
-if currentExpression != nil && lexer.currentIndex < count(amEquation) - 1
+if currentExpression != nil && lexer.currentLoc < count(amEquation) - 1
 && !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
 	if let nextE = getNextExpression() {
-		return SequenceExprE(e1: currentExpression!, e2: nextE)
+		return SequenceE(e1: currentExpression!, e2: nextE)
 	} else {
 		println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
 		return currentExpression

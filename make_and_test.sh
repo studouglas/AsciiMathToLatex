@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Generating source code..."
-lit -odir AsciiMathToLatex AsciiMathToLatex.lit Parser.lit Lexer.lit Util.lit ExpressionTypes.lit
+lit -odir AsciiMathToLatex Main.lit Parser.lit Lexer.lit Util.lit ExpressionTypes.lit
 
 echo "Compiling code..."
 xcrun swiftc \

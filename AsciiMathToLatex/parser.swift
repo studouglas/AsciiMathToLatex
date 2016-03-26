@@ -54,9 +54,9 @@ class Parser {
 	
 		if contains(leftDelimiters, currentSymbol) {
 			if let nextExpression = getNextExpression() {
-				let delimType = BracketType(str: currentSymbol)
+				let delimType = DelimiterType(str: currentSymbol)
 				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-					lexer.currentIndex++
+					lexer.currentLoc++
 					return DelimitedSE(expr: nextExpression, bracketType: delimType)
 				} else {
 					println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
@@ -104,7 +104,7 @@ class Parser {
 		
 		if !contains(expressionSymbols, String(nextCharacter!)) {
 			if let nextExpression = getNextExpression() {
-				return SequenceE(simpleExpr: simpleExpression, expr: nextExpression)
+				return SimpleSequenceE(simpleExpr: simpleExpression, expr: nextExpression)
 			} else {
 				println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
 				return nil
@@ -136,10 +136,10 @@ class Parser {
 			default: break
 			}
 	
-			if currentExpression != nil && lexer.currentIndex < count(amEquation) - 1
+			if currentExpression != nil && lexer.currentLoc < count(amEquation) - 1
 			&& !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
 				if let nextE = getNextExpression() {
-					return SequenceExprE(e1: currentExpression!, e2: nextE)
+					return SequenceE(e1: currentExpression!, e2: nextE)
 				} else {
 					println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
 					return currentExpression
@@ -152,6 +152,5 @@ class Parser {
 	}
 
 
-	
 }
 

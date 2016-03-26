@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Types of Expressions | AsciiMath to LaTeX</title>
+<title>Types | AsciiMath to LaTeX</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -35,48 +35,89 @@ o.className&&e.test(o.className)){m=!0;break}if(!m){d.className+=" prettyprinted
 {h:m,c:d,j:u,i:o};K(r)}}}i<p.length?setTimeout(g,250):"function"===typeof a&&a()}for(var b=d||document.body,s=b.ownerDocument||document,b=[b.getElementsByTagName("pre"),b.getElementsByTagName("code"),b.getElementsByTagName("xmp")],p=[],m=0;m<b.length;++m)for(var j=0,k=b[m].length;j<k;++j)p.push(b[m][j]);var b=q,c=Date;c.now||(c={now:function(){return+new Date}});var i=0,r,n=/\blang(?:uage)?-([\w.]+)(?!\S)/,e=/\bprettyprint\b/,v=/\bprettyprinted\b/,w=/pre|xmp/i,t=/^code$/i,f=/^(?:pre|code|xmp)$/i,
 h={};g()}};typeof define==="function"&&define.amd&&define("google-code-prettify",[],function(){return Y})})();}()
 </script>
+<script>
+PR.registerLangHandler(PR.createSimpleLexer([[PR.PR_PLAIN,/^[ \n\r\t\v\f\0]+/,null," \n\r   \f\x00"],[PR.PR_STRING,/^"(?:[^"\\]|(?:\\.)|(?:\\\((?:[^"\\)]|\\.)*\)))*"/,null,'"']],[[PR.PR_LITERAL,/^(?:(?:0x[\da-fA-F][\da-fA-F_]*\.[\da-fA-F][\da-fA-F_]*[pP]?)|(?:\d[\d_]*\.\d[\d_]*[eE]?))[+-]?\d[\d_]*/,null],[PR.PR_LITERAL,/^-?(?:(?:0(?:(?:b[01][01_]*)|(?:o[0-7][0-7_]*)|(?:x[\da-fA-F][\da-fA-F_]*)))|(?:\d[\d_]*))/,null],[PR.PR_LITERAL,/^(?:true|false|nil)\b/,null],[PR.PR_KEYWORD,/^\b(?:__COLUMN__|__FILE__|__FUNCTION__|__LINE__|#available|#else|#elseif|#endif|#if|#line|arch|arm|arm64|associativity|as|break|case|catch|class|continue|convenience|default|defer|deinit|didSet|do|dynamic|dynamicType|else|enum|extension|fallthrough|final|for|func|get|guard|import|indirect|infix|init|inout|internal|i386|if|in|iOS|iOSApplicationExtension|is|lazy|left|let|mutating|none|nonmutating|operator|optional|OSX|OSXApplicationExtension|override|postfix|precedence|prefix|private|protocol|Protocol|public|required|rethrows|return|right|safe|self|set|static|struct|subscript|super|switch|throw|try|Type|typealias|unowned|unsafe|var|weak|watchOS|while|willSet|x86_64)\b/,null],[PR.PR_COMMENT,/^\/\/.*?[\n\r]/,null],[PR.PR_COMMENT,/^\/\*[\s\S]*?(?:\*\/|$)/,null],[PR.PR_PUNCTUATION,/^<<=|<=|<<|>>=|>=|>>|===|==|\.\.\.|&&=|\.\.<|!==|!=|&=|~=|~|\(|\)|\[|\]|{|}|@|#|;|\.|,|:|\|\|=|\?\?|\|\||&&|&\*|&\+|&-|&=|\+=|-=|\/=|\*=|\^=|%=|\|=|->|`|==|\+\+|--|\/|\+|!|\*|%|<|>|&|\||\^|\?|=|-|_/,null],[PR.PR_TYPE,/^\b(?:[@_]?[A-Z]+[a-z][A-Za-z_$@0-9]*|\w+_t\b)/,null]]),["swift"]);
+</script>
 <style>
 .pln{color:#1b181b}.str{color:#918b3b}.kwd{color:#7b59c0}.com{color:#9e8f9e}.typ{color:#516aec}.lit{color:#a65926}.clo,.opn,.pun{color:#1b181b}.tag{color:#ca402b}.atn{color:#a65926}.atv{color:#159393}.dec{color:#a65926}.var{color:#ca402b}.fun{color:#516aec}pre.prettyprint{background:#f7f3f7;color:#ab9bab;font-family:Menlo,Consolas,"Bitstream Vera Sans Mono","DejaVu Sans Mono",Monaco,monospace;font-size:12px;line-height:1.5;border:1px solid #d8cad8;padding:10px}ol.linenums{margin-top:0;margin-bottom:0}
 body{min-width:200px;max-width:850px;margin:0 auto;padding:30px;}.chapter-nav{font-size: 10pt;}a:link,a:visited{color:#00f}.codeblock_name,code,pre.prettyprint{font-family:Monaco,"Lucida Console",monospace}body{font-size:14pt}.codeblock_name,.math,.seealso,code{font-size:10pt}.codeblock{page-break-inside:avoid;padding-bottom:15px}.math{text-indent:0}pre.prettyprint{font-size:10pt;padding:10px;border-radius:10px;border:none;white-space:pre-wrap}.codeblock_name{margin-top:1.25em;display:block}a:link{text-decoration:none}a:link:not(.lit):hover{color:#00f;text-decoration:underline}a:link:active{color:red}h4{padding-right:1.25em}h4.noheading{margin-bottom:0}h1{text-align:center}code{padding:2px}pre{-moz-tab-size:4;-o-tab-size:4;tab-size:4}p:not(.notp){margin:0;text-indent:2em}.two-col{list-style-type:none}.two-col li:before{content:'-';padding:5px;margin-right:5px;color:orange;background-color:#fff;display:inline-block}@media print{body{font-size:10pt}pre.prettyprint{font-size:8pt}.seealso{font-size:9pt}.codeblock_name,.math,code{font-size:8pt}.math{text-indent:0}}
-</style>
+ body {
+	font-family: Helvetica, sans-serif;
+}
+
+p {
+	text-indent: 0!important;
+	margin-bottom: 1em!important;;
+}
+
+h4 {
+	font-size: 20px;
+}
+
+.subtitle {
+	font-weight: 400;
+	font-size: 22px;
+}
+
+.center {
+	text-align: center;
+	margin: 0 auto;
+	display: block;
+}</style>
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>Types of Expressions | AsciiMath to LaTeX</h1>
+<h1>Types | AsciiMath to LaTeX</h1>
 <a name="1:1"><div class="section"><h4>1. Description</h4></a>
-<p>desc goes here.
+<p>Each of the possible expression and simple expression "types" corresponding to
+an option in the grammar definition is represented by a <code>struct</code> that stores
+the appropriate sub-expressions and provides funtions to output a string representation for debugging,
+as well as a LaTeX representation for final output.
+</p>
+<p>As well as the above types, there is also a type representing a delimiter. This is also
+modelled as a <code>struct</code>, and provides functions to output the left or right delimter of a
+given type. This is used to simplify the verification of matching delimiters in parsing.
+</p>
+<p>The constant symbols in AsciiMath are often much shorter than their LaTeX counterparts, and as such a 
+facility to retrieve the correct LaTeX symbol for a given constant is required. This is implemented as
+a switch with cases for each symbol that differs from its LaTeX counterpart. For symbols that are the same, 
+such as <code>alpha</code>, a default case prepends a backslash and adds a space at the end.
+</p>
+
+</div>
+<a name="1:2"><div class="section"><h4>2. Module Structure</h4></a>
+<p>Since the types declared in this file are used throughout the project, they are not embedded within a class.
+The function to retrieve the LaTeX represenation of a constant symbol is embedded within the constant simple expression
+type, as it is only used within that type.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>expressiontypes.swift</strong> <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
-<span class="nocode pln">{Simple expression type, <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<span class="nocode pln">{Simple expressions, <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<span class="nocode pln">{Expression type, <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<span class="nocode pln">{Expressions, <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<span class="nocode pln">{Bracket type, <a href="ExpressionTypes.html#1:1">1</a>}</span>
+<span class="codeblock_name">{<strong>expressiontypes.swift</strong> <a href="ExpressionTypes.html#1:2">2</a>}</span>
+<pre class="prettyprint lang-swift">
+<span class="nocode pln">{Expression type interface, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<span class="nocode pln">{Simple expressions, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<span class="nocode pln">{Expressions, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Bracket type, <a href="ExpressionTypes.html#1:5">5</a>}</span>
 </pre>
 
 
 
 </div>
+</div>
+<a name="1:3"><div class="section"><h4>3. Interface</h4></a>
+<p>Although both simple expressions and expressions have identical interfaces, they are presented as separate protocols
+to improve the readability of the program. This adds some code duplication, but it allows the reader to better 
+reason about the type of a given object. The interface that they both share simply provides functions to retrieve the 
+string representation of the expression (for debugging) as well as the LaTeX equivalent.
+</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Simple expression type <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Expression type interface <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 protocol SimpleExpression {
 	func toString() -&gt; String
 	func toLatexString() -&gt; String
 }
-</pre>
-
-
-
-</div>
-
-<div class="codeblock">
-<span class="codeblock_name">{Expression type <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
 protocol Expression {
 	func toString() -&gt; String
 	func toLatexString() -&gt; String
@@ -84,12 +125,32 @@ protocol Expression {
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="ExpressionTypes.html#1:2">2</a></p>
 </div>
+<p>The following types for simple expressions match the four possibilities for a simple expression in the AsciiMath gramamr.
+</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Simple expressions <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Simple expressions <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
+<span class="nocode pln">{Constant SE, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<span class="nocode pln">{Delimited SE, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<span class="nocode pln">{Unary SE, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<span class="nocode pln">{Binary SE, <a href="ExpressionTypes.html#1:3">3</a>}</span>
+</pre>
+
+
+<p class="seealso">Used in section <a href="ExpressionTypes.html#1:2">2</a></p>
+</div>
+<p>Constant simple expressions (<code>c</code> in the grammar) include numbers (potentially multi-digit), 
+greek symbols, and single characters. Constants form the "base" of an equation. This type contains
+a function to convert the constant symbol from AsciiMath to LaTeX. For example, the AsciiMath symbol "oo" is 
+used to represent infinity, which in LaTeX is "\infty".
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Constant SE <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 struct ConstantSE: SimpleExpression {
 	var str = ""
 	init(str: String) {
@@ -101,12 +162,27 @@ struct ConstantSE: SimpleExpression {
 	func toLatexString() -&gt; String {
 		return latexForConstantSymbol(str)
 	}
+<span class="nocode pln">	{Constant symbols to Latex, <a href="ExpressionTypes.html#1:6">6</a>}</span>
 }
+</pre>
+
+
+
+</div>
+<p>Delimited simple expressions consist of an 
+expression surrounded by matching delimiters (parentheses, braces etc.). Note that the DelimiterType
+used by the simple expression is not contained within the type as is the constant symbol conversion function 
+discussed above. This is because the DelimiterType is used by other modules, so must remain public.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Delimited SE <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 struct DelimitedSE: SimpleExpression {
 	var expression: Expression!
-	var bracketType: BracketType!
+	var bracketType: DelimiterType!
 	
-	init(expr: Expression, bracketType: BracketType) {
+	init(expr: Expression, bracketType: DelimiterType) {
  		self.expression = expr
  		self.bracketType = bracketType
 	}
@@ -123,6 +199,17 @@ struct DelimitedSE: SimpleExpression {
 		return "\(leftDelim)\(expression.toLatexString())\(rightDelim)"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>A unary simple expression is simply a unary operator (e.g. <code>sqrt</code>) followed by another simple expression.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Unary SE <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 struct UnarySE: SimpleExpression {
 	var simpleExpression: SimpleExpression
 	var unaryOperator = ""
@@ -138,6 +225,17 @@ struct UnarySE: SimpleExpression {
 		return "\\\(unaryOperator){\(simpleExpression.toLatexString())}"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>A binary simple expression is simply a binary operator (e.g. <code>frac</code>) followed by two simple expressions.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Binary SE <a href="ExpressionTypes.html#1:3">3</a>}</span>
+<pre class="prettyprint lang-swift">
 struct BinarySE: SimpleExpression {
 	var simpleExpressionLeft: SimpleExpression
 	var simpleExpressionRight: SimpleExpression
@@ -160,10 +258,33 @@ struct BinarySE: SimpleExpression {
 
 
 </div>
+</div>
+<a name="1:4"><div class="section"><h4>4. Expressions</h4></a>
+<p>There are more types of expressions than simple expressions, as expressions form the base of the grammar 
+(i.e. the root node of the AST is an expression).
+</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Expressions <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
+<span class="codeblock_name">{Expressions <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
+<span class="nocode pln">{Simple expression E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Simple sequence E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Sequence E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Fraction E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Subscript E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{Superscript E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<span class="nocode pln">{SubSuperscript E, <a href="ExpressionTypes.html#1:4">4</a>}</span>
+</pre>
+
+
+<p class="seealso">Used in section <a href="ExpressionTypes.html#1:2">2</a></p>
+</div>
+<p>The simplest type of expression consists only of a simple expression.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Simple expression E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 struct SimpleExpressionE: Expression {
 	var simpleExpression: SimpleExpression
 	init(simpleExpr: SimpleExpression) {
@@ -176,21 +297,20 @@ struct SimpleExpressionE: Expression {
 		return simpleExpression.toLatexString()
 	}
 }
-struct SequenceExprE: Expression {
-	var e1: Expression
-	var e2: Expression
-	init(e1: Expression, e2: Expression) {
-		self.e1 = e1
-		self.e2 = e2
-	}
-	func toString() -&gt; String {
-		return "\(e1.toString())\(e2.toString())"
-	}
-	func toLatexString() -&gt; String {
-		return "\(e1.toLatexString())\(e2.toLatexString())"
-	}
-}
-struct SequenceE: Expression {
+</pre>
+
+
+
+</div>
+<p>The simple sequence consists of a simple expression followed by an expression. This recursive 
+definition provides the backbone for most equations, as a long series of constant symbols is represented
+by it.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Simple sequence E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
+struct SimpleSequenceE: Expression {
 	var simpleExpression: SimpleExpression
 	var expression: Expression
 
@@ -205,6 +325,45 @@ struct SequenceE: Expression {
 		return "\(simpleExpression.toLatexString())\(expression.toLatexString())"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>The sequence expression represents an expression followed by another expression. Without this rule, equations with
+a "traditional" expression (i.e. fraction, sub/super-script) would not be parsed after the expression.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Sequence E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
+struct SequenceE: Expression {
+	var e1: Expression
+	var e2: Expression
+	init(e1: Expression, e2: Expression) {
+		self.e1 = e1
+		self.e2 = e2
+	}
+	func toString() -&gt; String {
+		return "\(e1.toString())\(e2.toString())"
+	}
+	func toLatexString() -&gt; String {
+		return "\(e1.toLatexString())\(e2.toLatexString())"
+	}
+}
+</pre>
+
+
+
+</div>
+<p>An expression that greatly simplifies the LaTeX syntax for fractions, the fraction expression consists of a
+simple expression followed by a forward slash and another simple expression. Note that to have complex 
+expressions in the fraction they must be delimited simple expressions.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Fraction E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 struct FractionE: Expression {
 	var simpleExpressionTop: SimpleExpression
 	var simpleExpressionBottom: SimpleExpression
@@ -220,6 +379,18 @@ struct FractionE: Expression {
 		return "\\frac{\(simpleExpressionTop.toLatexString())}{\(simpleExpressionBottom.toLatexString())}"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>The subscript expression is simply a simple expression followed by an underscore, and another simple expression. Note
+that complex expressions must be delimited simple expressions.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Subscript E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 struct SubscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSubscript: SimpleExpression
@@ -235,6 +406,18 @@ struct SubscriptE: Expression {
 		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>The superscript expression is simply a simple expression followed by a caret, and another simple expression. Note
+that complex expressions must be delimited simple expressions.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Superscript E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 struct SuperscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSuperscript: SimpleExpression
@@ -250,6 +433,18 @@ struct SuperscriptE: Expression {
 		return "\(simpleExpressionBase.toLatexString())^{\(simpleExpressionSuperscript.toLatexString())}"
 	}
 }
+</pre>
+
+
+
+</div>
+<p>This expression combines a subscript and a superscript, with the subscript being declared first.
+Note that complex expressions must be delimited simple expressions.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{SubSuperscript E <a href="ExpressionTypes.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
 struct SubSuperscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSubscript: SimpleExpression
@@ -272,109 +467,121 @@ struct SubSuperscriptE: Expression {
 
 
 </div>
+</div>
+<a name="1:5"><div class="section"><h4>5. Delimiter Type</h4></a>
+<p>Representing delimiters by a type (rather than a string) allows the programmer to easily access the corresponding
+delimiter of a given delimiter. If the programmer mistakenly tries to initialize a delimiter type with an unspported symbol,
+an error message is output and the type defaults to parentheses.
+</p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Bracket type <a href="ExpressionTypes.html#1:1">1</a>}</span>
-<pre class="prettyprint">
-enum BracketType {
+<span class="codeblock_name">{Bracket type <a href="ExpressionTypes.html#1:5">5</a>}</span>
+<pre class="prettyprint lang-swift">
+enum DelimiterType {
 	case Paren, Bracket, Brace
 	func leftString() -&gt; String {
 		switch self {
-			case Paren:
-				return "("
-			case Bracket:
-				return "["
-			case Brace:
-				return "{"
+		case Paren: return "("
+		case Bracket: return "["
+		case Brace: return "{"
 		}
 	}
 	func rightString() -&gt; String {
 		switch self {
-			case Paren:
-				return ")"
-			case Bracket:
-				return "]"
-			case Brace:
-				return "}"
-			
+		case Paren: return ")"
+		case Bracket: return "]"
+		case Brace: return "}"
 		}
 	}
 	init(str: String) {
 		switch(str) {
-			case "(",")": self = Paren
-			case "[","]": self = Bracket
-			case "{","}": self = Brace
-			default:
-				println("Error. Trying to initialize BracketType with unsupported bracket '\(str)'")
-				self = Paren
+		case "(",")": self = Paren
+		case "[","]": self = Bracket
+		case "{","}": self = Brace
+		default:
+			println("Error. Trying to initialize DelimiterType with unsupported bracket '\(str)'")
+			self = Paren
 		}
 	}
 }
+</pre>
 
-func latexForConstantSymbol(symbol: String) -&gt; String {
+
+<p class="seealso">Used in section <a href="ExpressionTypes.html#1:2">2</a></p>
+</div>
+</div>
+<a name="1:6"><div class="section"><h4>6. Constant Symbols to LaTeX</h4></a>
+<p>The constant symbols in AsciiMath use a simpler syntax than their LaTeX counterparts. This function returns
+the corresponding LaTeX representation for the input symbol. In the case where the LaTeX symbol is the same (with
+a backslash at the beginning), no explicit case in the switch statement is required.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Constant symbols to Latex <a href="ExpressionTypes.html#1:6">6</a>}</span>
+<pre class="prettyprint lang-swift">
+private func latexForConstantSymbol(symbol: String) -&gt; String {
 	var latexSymbol = ""
 	switch(symbol) {
-		// operation symbols
-		case "*": latexSymbol = "cdot"
-		case "**": return "*"
-		case "***": latexSymbol = "star"
-		case "//": return "/"
-		case "\\\\": return "\\ "
-		case "xx": latexSymbol = "times"
-		case "-:": latexSymbol = "div"
-		case "@": latexSymbol = "circ"
-		case "o+": latexSymbol = "oplus"
-		case "ox": latexSymbol = "otimes"
-		case "o.": latexSymbol = "odot"
-		case "^^": latexSymbol = "land"
-		case "^^^": latexSymbol = "bigwedge"
-		case "vv": latexSymbol = "lor"
-		case "vvv": latexSymbol = "bigvee"
-		case "nn": latexSymbol = "intersection"
-		case "nnn": latexSymbol = "bigcap"
-		case "uu": latexSymbol = "union"
-		case "uuu": latexSymbol = "bigcup"
-		
-		// miscellaneous symbols
-		case "del": latexSymbol = "delta"
-		case "grad": latexSymbol = "nabla"
-		case "+-": latexSymbol = "pm"
-		case "O/": latexSymbol = "Theta"
-		case "oo": latexSymbol = "infty"
-		case "/_": latexSymbol = "angle"
-		case ":.": latexSymbol = "therefore"
-		case "|cdots|": return "|\\cdots"
-		case "|quad|": return "|\\quad|"
-		case "diamond": latexSymbol = "Diamond"
-		case "square": latexSymbol = ""
-		case "|__": latexSymbol = "lfloor"
-		case "__|": latexSymbol = "rfloor"
-		case "|~": latexSymbol = "lceil"
-		case "~|": latexSymbol = "rceil"
-		case "CC": latexSymbol = "mathbb{C}"
-		case "NN": latexSymbol = "mathbb{N}"
-		case "QQ": latexSymbol = "mathbb{Q}"
-		case "RR": latexSymbol = "mathbb{R}"
-		case "ZZ": latexSymbol = "mathbb{Z}"
+	// operation symbols
+	case "*": latexSymbol = "cdot"
+	case "**": return "*"
+	case "***": latexSymbol = "star"
+	case "//": return "/"
+	case "\\\\": return "\\ "
+	case "xx": latexSymbol = "times"
+	case "-:": latexSymbol = "div"
+	case "@": latexSymbol = "circ"
+	case "o+": latexSymbol = "oplus"
+	case "ox": latexSymbol = "otimes"
+	case "o.": latexSymbol = "odot"
+	case "^^": latexSymbol = "land"
+	case "^^^": latexSymbol = "bigwedge"
+	case "vv": latexSymbol = "lor"
+	case "vvv": latexSymbol = "bigvee"
+	case "nn": latexSymbol = "intersection"
+	case "nnn": latexSymbol = "bigcap"
+	case "uu": latexSymbol = "union"
+	case "uuu": latexSymbol = "bigcup"
+	
+	// miscellaneous symbols
+	case "del": latexSymbol = "delta"
+	case "grad": latexSymbol = "nabla"
+	case "+-": latexSymbol = "pm"
+	case "O/": latexSymbol = "Theta"
+	case "oo": latexSymbol = "infty"
+	case "/_": latexSymbol = "angle"
+	case ":.": latexSymbol = "therefore"
+	case "|cdots|": return "|\\cdots"
+	case "|quad|": return "|\\quad|"
+	case "diamond": latexSymbol = "Diamond"
+	case "square": latexSymbol = ""
+	case "|__": latexSymbol = "lfloor"
+	case "__|": latexSymbol = "rfloor"
+	case "|~": latexSymbol = "lceil"
+	case "~|": latexSymbol = "rceil"
+	case "CC": latexSymbol = "mathbb{C}"
+	case "NN": latexSymbol = "mathbb{N}"
+	case "QQ": latexSymbol = "mathbb{Q}"
+	case "RR": latexSymbol = "mathbb{R}"
+	case "ZZ": latexSymbol = "mathbb{Z}"
 
-		// relation symbols
-		case "!=": latexSymbol = "neq"
-		case "&lt;=": latexSymbol = "leq"
-		case "&gt;=": latexSymbol = "geq"
-		case "-&lt;": latexSymbol = "prec"
-		case "&gt;-": latexSymbol = "succ"
-		case "!in": latexSymbol = "notin"
-		case "sub": latexSymbol = "subset"
-		case "sube": latexSymbol = "subseteq"
-		case "sup": latexSymbol = "supset"
-		case "supe": latexSymbol = "supseteq"
-		case "-=": latexSymbol = "equiv"
-		case "~=": latexSymbol = "cong"
-		case "~~": latexSymbol = "approx"
-		case "prop": latexSymbol = "propto"
+	// relation symbols
+	case "!=": latexSymbol = "neq"
+	case "&lt;=": latexSymbol = "leq"
+	case "&gt;=": latexSymbol = "geq"
+	case "-&lt;": latexSymbol = "prec"
+	case "&gt;-": latexSymbol = "succ"
+	case "!in": latexSymbol = "notin"
+	case "sub": latexSymbol = "subset"
+	case "sube": latexSymbol = "subseteq"
+	case "sup": latexSymbol = "supset"
+	case "supe": latexSymbol = "supseteq"
+	case "-=": latexSymbol = "equiv"
+	case "~=": latexSymbol = "cong"
+	case "~~": latexSymbol = "approx"
+	case "prop": latexSymbol = "propto"
 
-		default: latexSymbol = symbol
-			
+	default: latexSymbol = symbol			
 	}
 	// single letters shouldn't have \ prepended
 	if count(latexSymbol) == 1 || latexSymbol.toInt() != nil {
@@ -382,11 +589,10 @@ func latexForConstantSymbol(symbol: String) -&gt; String {
 	}
 	return "\\\(latexSymbol) "
 }
-
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="ExpressionTypes.html#1:3">3</a></p>
 </div>
 
 </div>

@@ -1,31 +1,151 @@
+@code_type Swift .swift
+@compiler swiftc
+@add_css literature_style_override.css
 @title Lexer | AsciiMath to LaTeX
 
-@introduction
-Intro here.
+@s Description
+The lexer module accesses the string at a lower level than the parser, on a character-by-character basis. 
+There are to public functions used by the Parser. The simpler of the two allows the caller to see what 
+the next character in the string is (relative to the current location) without updating the current location.
+The main function used by the Parser returns the next symbol (potentially multiple characters) in the string.
 
-@s Class definition
+It is the lexer that stores all the possible symbols in AsciiMath, as per their [homepage](http://asciimath.org).
+These are public, as they are used by the parser.
+
+@s Module Structure
+The majority of the module is encapsulated within the Lexer class, with the exception of the symbol declaration. Since
+the symbols are accessed by the Parser and the expression types, these remain public.
 --- lexer.swift
 class Lexer {
-	@{Member variables}
-	@{Constructor}
+	@{Lexer member variables}
+	@{Lexer constructor}
 	@{Get symbol}
+	@{Get multiple character symbol}
+	@{Peek character}
 	@{Get character}
 }
 @{Symbols}
 ---
 
---- Member variables
+@s Member Variables
+The only public member variable of the Lexer represents the current location in the string (as an index). As the lexer
+returns symbols in the string, the current location increases.
+--- Lexer member variables
 private let amEquation: String!
 private let allSymbols: [String]!
-var currentIndex: Int = 0
+var currentLoc: Int = 0
 ---
 
+@s Constructor
+The constructor simply sets the AsciiMath equation string member variable, and takes all the different types
+of symbols and combines them into one array to simplify checking for a match.
+--- Lexer constructor
+init(amEquation: String) {
+	self.amEquation = amEquation
+	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
+				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
+}
+---
+
+@s Get Symbol
+There are two main cases for a symbol - it is either a multi-character symbol (such as `alpha` or `frac`), or it is a
+single character (such as `n` or `/`). The function first retrieves the next character, and then checks if there
+are any multi-character symbols that match the substring starting at the current index. If there are, the longest 
+one is returned. If not, then the current character is returned. Note that if the current character is a digit, we 
+check if there are more digits following it and return the multiple digit number rather than just the first 
+digit if that's the case. 
+--- Get symbol
+func getNextSymbol() -> String? {
+	let currentCharacter = getNextCharacter()
+	if (currentCharacter == nil) {
+		return nil
+	}
+
+	var currentSymbol = String(currentCharacter!)
+	if let multicharSymbol = getMulticharSymbol() {
+		return multicharSymbol
+	} else {
+		@{Check for multiple digit number}
+		return currentSymbol
+	}
+}
+---
+
+If we don't check for multi-digit numbers and return the full number, then multiple digit numbers will be treated as separate simple expressions,
+and will not be grouped properly. For example, `a^12` would be interpreted as `a^{1} 2` rather than the correct `a^{12}`.
+--- Check for multiple digit number
+if currentSymbol.toInt() != nil {
+	var nextChar = peekNextCharacter()
+	while (nextChar != nil && String(nextChar!).toInt() != nil) {
+		currentSymbol += String(nextChar!)
+		currentLoc++
+		nextChar = peekNextCharacter()
+	}
+}
+---
+
+If a multiple character symbol is matched at the current location, it is returned, otherwise `nil` is returned.
+Note that it is the longest matching symbol that is returned, rather than the first one. Since some symbols are
+prefixes to longer symbols, we need to ensure we take the longest. The performance of this function could be significantly 
+improved, but it was left in its current form since the AsciiMath equations passed to the program are usually
+very short, so the program executes very quickly nonetheless. It is planned to improve the performance of this function
+in the future.
+--- Get multiple character symbol
+private func getMulticharSymbol() -> String? {
+	var longestMatch = ""
+	for symbol in allSymbols {
+		let symLength = count(symbol)
+		if currentLoc + symLength <= count(amEquation)
+		&& amEquation[currentLoc-1..<currentLoc+symLength-1] == symbol
+		&& symLength > count(longestMatch) {
+			longestMatch = amEquation[currentLoc-1..<currentLoc+symLength-1]
+		}
+	}
+
+	if longestMatch != "" {
+		currentLoc += count(longestMatch) - 1
+		return longestMatch
+	}
+	return nil
+}
+---
+
+@s Peek Character
+The peek function allows the caller to see what the next character is (or if it is `nil`) without 
+modifyin the current location in the string.
+--- Peek character
+func peekNextCharacter() -> Character? {
+	if (currentLoc >= count(amEquation)) {
+		return nil
+	}
+	return amEquation[currentLoc]
+}
+---
+
+@s Get Character
+Get character simply returns the next character in the string, or `nil` if the current location passes
+at the end of the string.
+--- Get character
+private func getNextCharacter() -> Character? {
+	if (currentLoc >= count(amEquation)) {
+		return nil
+	} else {
+		let c = amEquation[currentLoc];
+		currentLoc++;
+		return c
+	}
+}
+---
+
+@s Symbols
+The symbols supported by AsciiMath are outlined on the [homepage](http://asciimath.org).
+They are declared as public as they are needed by the constant expression type and the parser.
 --- Symbols
-let unarySymbols = ["sqrt", "text", "bb","hat","bar","ul","vec","dot","ddot"]
-let binarySymbols = ["frac", "root", "stackrel"]
-let leftDelimiters = ["(", "[", "{"]
-let rightDelimiters = [")", "]", "}"]
-let expressionSymbols = ["^", "_", "/"]
+let unarySymbols = ["sqrt","text","bb","hat","bar","ul","vec","dot","ddot"]
+let binarySymbols = ["frac","root","stackrel"]
+let leftDelimiters = ["(","[","{"]
+let rightDelimiters = [")","]","}"]
+let expressionSymbols = ["^","_","/"]
 
 // constants
 let greekSymbols = ["alpha","beta","chi","delta","Delta","epsilon","varepsilon",
@@ -42,78 +162,4 @@ let miscSymbols = ["int","oint","del","grad","+-","O/","oo","aleph","/_",":.","|
 				   "__|","|~","~|","CC","NN","QQ","RR","ZZ"]
 let logicalSymbols = ["and","or","not","=>","if","iff","AA","EE","_|_","TT","|--","|=="]
 let arrowSymbols = ["uarr","darr","rarr","->","|->","larr","harr","rArr","lArr","hArr"]
----
-
---- Constructor
-init(amEquation: String) {
-	self.amEquation = amEquation
-
-	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
-				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
-}
----
-
-@s Functions
---- Get symbol
-func getNextSymbol() -> String? {
-	let currentCharacter = getNextCharacter()
-	if (currentCharacter == nil) {
-		return nil
-	}
-
-	var currentSymbol = String(currentCharacter!)
-
-	// currentChar is first character of multicharacter symbol
-	if let multicharSymbol = getMulticharSymbol() {
-		return multicharSymbol
-	} else {
-		// multiple digit numbers are one symbol
-		if currentSymbol.toInt() != nil {
-			var nextChar = peekNextCharacter()
-			while (nextChar != nil && String(nextChar!).toInt() != nil) {
-				currentSymbol += String(nextChar!)
-				currentIndex++
-				nextChar = peekNextCharacter()
-			}
-		}
-		return currentSymbol
-	}
-}
-
-private func getMulticharSymbol() -> String? {
-	var longestMatch = ""
-	for symbol in allSymbols {
-		let symLength = count(symbol)
-		if currentIndex + symLength <= count(amEquation)
-		&& amEquation[currentIndex-1..<currentIndex+symLength-1] == symbol
-		&& symLength > count(longestMatch) {
-			longestMatch = amEquation[currentIndex-1..<currentIndex+symLength-1]
-		}
-	}
-
-	if longestMatch != "" {
-		currentIndex += count(longestMatch) - 1
-		return longestMatch
-	}
-	return nil
-}
-
-func peekNextCharacter() -> Character? {
-	if (currentIndex >= count(amEquation)) {
-		return nil
-	}
-	return amEquation[currentIndex]
-}
----
-
---- Get character
-func getNextCharacter() -> Character? {
-	if (currentIndex >= count(amEquation)) {
-		return nil
-	} else {
-		let c: Character? = amEquation[currentIndex];
-		currentIndex++;
-		return c
-	}
-}
 ---

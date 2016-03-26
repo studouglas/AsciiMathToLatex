@@ -1,31 +1,63 @@
-@title Types of Expressions | AsciiMath to LaTeX
+@code_type Swift .swift
+@compiler swiftc
+@add_css literature_style_override.css
+@title Types | AsciiMath to LaTeX
 
 @s Description
-desc goes here.
+Each of the possible expression and simple expression "types" corresponding to
+an option in the grammar definition is represented by a `struct` that stores
+the appropriate sub-expressions and provides funtions to output a string representation for debugging,
+as well as a LaTeX representation for final output.
 
+As well as the above types, there is also a type representing a delimiter. This is also
+modelled as a `struct`, and provides functions to output the left or right delimter of a
+given type. This is used to simplify the verification of matching delimiters in parsing.
+
+The constant symbols in AsciiMath are often much shorter than their LaTeX counterparts, and as such a 
+facility to retrieve the correct LaTeX symbol for a given constant is required. This is implemented as
+a switch with cases for each symbol that differs from its LaTeX counterpart. For symbols that are the same, 
+such as `alpha`, a default case prepends a backslash and adds a space at the end.
+
+@s Module Structure
+Since the types declared in this file are used throughout the project, they are not embedded within a class.
+The function to retrieve the LaTeX represenation of a constant symbol is embedded within the constant simple expression
+type, as it is only used within that type.
 --- expressiontypes.swift
-@{Simple expression type}
+@{Expression type interface}
 @{Simple expressions}
-@{Expression type}
 @{Expressions}
 @{Bracket type}
 ---
 
---- Simple expression type
+@s Interface
+Although both simple expressions and expressions have identical interfaces, they are presented as separate protocols
+to improve the readability of the program. This adds some code duplication, but it allows the reader to better 
+reason about the type of a given object. The interface that they both share simply provides functions to retrieve the 
+string representation of the expression (for debugging) as well as the LaTeX equivalent.
+--- Expression type interface
 protocol SimpleExpression {
 	func toString() -> String
 	func toLatexString() -> String
 }
----
-
---- Expression type
 protocol Expression {
 	func toString() -> String
 	func toLatexString() -> String
 }
 ---
 
+The following types for simple expressions match the four possibilities for a simple expression in the AsciiMath gramamr.
 --- Simple expressions
+@{Constant SE}
+@{Delimited SE}
+@{Unary SE}
+@{Binary SE}
+---
+
+Constant simple expressions (`c` in the grammar) include numbers (potentially multi-digit), 
+greek symbols, and single characters. Constants form the "base" of an equation. This type contains
+a function to convert the constant symbol from AsciiMath to LaTeX. For example, the AsciiMath symbol "oo" is 
+used to represent infinity, which in LaTeX is "\infty".
+--- Constant SE
 struct ConstantSE: SimpleExpression {
 	var str = ""
 	init(str: String) {
@@ -37,12 +69,21 @@ struct ConstantSE: SimpleExpression {
 	func toLatexString() -> String {
 		return latexForConstantSymbol(str)
 	}
+	@{Constant symbols to Latex}
 }
+---
+
+
+Delimited simple expressions consist of an 
+expression surrounded by matching delimiters (parentheses, braces etc.). Note that the DelimiterType
+used by the simple expression is not contained within the type as is the constant symbol conversion function 
+discussed above. This is because the DelimiterType is used by other modules, so must remain public.
+--- Delimited SE
 struct DelimitedSE: SimpleExpression {
 	var expression: Expression!
-	var bracketType: BracketType!
+	var bracketType: DelimiterType!
 	
-	init(expr: Expression, bracketType: BracketType) {
+	init(expr: Expression, bracketType: DelimiterType) {
  		self.expression = expr
  		self.bracketType = bracketType
 	}
@@ -59,6 +100,10 @@ struct DelimitedSE: SimpleExpression {
 		return "\(leftDelim)\(expression.toLatexString())\(rightDelim)"
 	}
 }
+---
+
+A unary simple expression is simply a unary operator (e.g. `sqrt`) followed by another simple expression.
+--- Unary SE
 struct UnarySE: SimpleExpression {
 	var simpleExpression: SimpleExpression
 	var unaryOperator = ""
@@ -74,6 +119,10 @@ struct UnarySE: SimpleExpression {
 		return "\\\(unaryOperator){\(simpleExpression.toLatexString())}"
 	}
 }
+---
+
+A binary simple expression is simply a binary operator (e.g. `frac`) followed by two simple expressions.
+--- Binary SE
 struct BinarySE: SimpleExpression {
 	var simpleExpressionLeft: SimpleExpression
 	var simpleExpressionRight: SimpleExpression
@@ -93,7 +142,21 @@ struct BinarySE: SimpleExpression {
 }
 ---
 
+@s Expressions
+There are more types of expressions than simple expressions, as expressions form the base of the grammar 
+(i.e. the root node of the AST is an expression).
 --- Expressions
+@{Simple expression E}
+@{Simple sequence E}
+@{Sequence E}
+@{Fraction E}
+@{Subscript E}
+@{Superscript E}
+@{SubSuperscript E}
+---
+
+The simplest type of expression consists only of a simple expression.
+--- Simple expression E
 struct SimpleExpressionE: Expression {
 	var simpleExpression: SimpleExpression
 	init(simpleExpr: SimpleExpression) {
@@ -106,21 +169,13 @@ struct SimpleExpressionE: Expression {
 		return simpleExpression.toLatexString()
 	}
 }
-struct SequenceExprE: Expression {
-	var e1: Expression
-	var e2: Expression
-	init(e1: Expression, e2: Expression) {
-		self.e1 = e1
-		self.e2 = e2
-	}
-	func toString() -> String {
-		return "\(e1.toString())\(e2.toString())"
-	}
-	func toLatexString() -> String {
-		return "\(e1.toLatexString())\(e2.toLatexString())"
-	}
-}
-struct SequenceE: Expression {
+---
+
+The simple sequence consists of a simple expression followed by an expression. This recursive 
+definition provides the backbone for most equations, as a long series of constant symbols is represented
+by it.
+--- Simple sequence E
+struct SimpleSequenceE: Expression {
 	var simpleExpression: SimpleExpression
 	var expression: Expression
 
@@ -135,6 +190,31 @@ struct SequenceE: Expression {
 		return "\(simpleExpression.toLatexString())\(expression.toLatexString())"
 	}
 }
+---
+
+The sequence expression represents an expression followed by another expression. Without this rule, equations with
+a "traditional" expression (i.e. fraction, sub/super-script) would not be parsed after the expression.
+--- Sequence E
+struct SequenceE: Expression {
+	var e1: Expression
+	var e2: Expression
+	init(e1: Expression, e2: Expression) {
+		self.e1 = e1
+		self.e2 = e2
+	}
+	func toString() -> String {
+		return "\(e1.toString())\(e2.toString())"
+	}
+	func toLatexString() -> String {
+		return "\(e1.toLatexString())\(e2.toLatexString())"
+	}
+}
+---
+
+An expression that greatly simplifies the LaTeX syntax for fractions, the fraction expression consists of a
+simple expression followed by a forward slash and another simple expression. Note that to have complex 
+expressions in the fraction they must be delimited simple expressions.
+--- Fraction E
 struct FractionE: Expression {
 	var simpleExpressionTop: SimpleExpression
 	var simpleExpressionBottom: SimpleExpression
@@ -150,6 +230,11 @@ struct FractionE: Expression {
 		return "\\frac{\(simpleExpressionTop.toLatexString())}{\(simpleExpressionBottom.toLatexString())}"
 	}
 }
+---
+
+The subscript expression is simply a simple expression followed by an underscore, and another simple expression. Note
+that complex expressions must be delimited simple expressions.
+--- Subscript E
 struct SubscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSubscript: SimpleExpression
@@ -165,6 +250,11 @@ struct SubscriptE: Expression {
 		return "\(simpleExpressionBase.toLatexString())_{\(simpleExpressionSubscript.toLatexString())}"
 	}
 }
+---
+
+The superscript expression is simply a simple expression followed by a caret, and another simple expression. Note
+that complex expressions must be delimited simple expressions.
+--- Superscript E
 struct SuperscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSuperscript: SimpleExpression
@@ -180,6 +270,12 @@ struct SuperscriptE: Expression {
 		return "\(simpleExpressionBase.toLatexString())^{\(simpleExpressionSuperscript.toLatexString())}"
 	}
 }
+---
+
+This expression combines a subscript and a superscript, with the subscript being declared first.
+Note that complex expressions must be delimited simple expressions.
+
+--- SubSuperscript E
 struct SubSuperscriptE: Expression {
 	var simpleExpressionBase: SimpleExpression
 	var simpleExpressionSubscript: SimpleExpression
@@ -199,106 +295,108 @@ struct SubSuperscriptE: Expression {
 }
 ---
 
+@s Delimiter Type
+Representing delimiters by a type (rather than a string) allows the programmer to easily access the corresponding
+delimiter of a given delimiter. If the programmer mistakenly tries to initialize a delimiter type with an unspported symbol,
+an error message is output and the type defaults to parentheses.
 --- Bracket type
-enum BracketType {
+enum DelimiterType {
 	case Paren, Bracket, Brace
 	func leftString() -> String {
 		switch self {
-			case Paren:
-				return "("
-			case Bracket:
-				return "["
-			case Brace:
-				return "{"
+		case Paren: return "("
+		case Bracket: return "["
+		case Brace: return "{"
 		}
 	}
 	func rightString() -> String {
 		switch self {
-			case Paren:
-				return ")"
-			case Bracket:
-				return "]"
-			case Brace:
-				return "}"
-			
+		case Paren: return ")"
+		case Bracket: return "]"
+		case Brace: return "}"
 		}
 	}
 	init(str: String) {
 		switch(str) {
-			case "(",")": self = Paren
-			case "[","]": self = Bracket
-			case "{","}": self = Brace
-			default:
-				println("Error. Trying to initialize BracketType with unsupported bracket '\(str)'")
-				self = Paren
+		case "(",")": self = Paren
+		case "[","]": self = Bracket
+		case "{","}": self = Brace
+		default:
+			println("Error. Trying to initialize DelimiterType with unsupported bracket '\(str)'")
+			self = Paren
 		}
 	}
 }
+---
 
-func latexForConstantSymbol(symbol: String) -> String {
+@s Constant Symbols to LaTeX
+The constant symbols in AsciiMath use a simpler syntax than their LaTeX counterparts. This function returns
+the corresponding LaTeX representation for the input symbol. In the case where the LaTeX symbol is the same (with
+a backslash at the beginning), no explicit case in the switch statement is required.
+--- Constant symbols to Latex
+private func latexForConstantSymbol(symbol: String) -> String {
 	var latexSymbol = ""
 	switch(symbol) {
-		// operation symbols
-		case "*": latexSymbol = "cdot"
-		case "**": return "*"
-		case "***": latexSymbol = "star"
-		case "//": return "/"
-		case "\\\\": return "\\ "
-		case "xx": latexSymbol = "times"
-		case "-:": latexSymbol = "div"
-		case "@": latexSymbol = "circ"
-		case "o+": latexSymbol = "oplus"
-		case "ox": latexSymbol = "otimes"
-		case "o.": latexSymbol = "odot"
-		case "^^": latexSymbol = "land"
-		case "^^^": latexSymbol = "bigwedge"
-		case "vv": latexSymbol = "lor"
-		case "vvv": latexSymbol = "bigvee"
-		case "nn": latexSymbol = "intersection"
-		case "nnn": latexSymbol = "bigcap"
-		case "uu": latexSymbol = "union"
-		case "uuu": latexSymbol = "bigcup"
-		
-		// miscellaneous symbols
-		case "del": latexSymbol = "delta"
-		case "grad": latexSymbol = "nabla"
-		case "+-": latexSymbol = "pm"
-		case "O/": latexSymbol = "Theta"
-		case "oo": latexSymbol = "infty"
-		case "/_": latexSymbol = "angle"
-		case ":.": latexSymbol = "therefore"
-		case "|cdots|": return "|\\cdots"
-		case "|quad|": return "|\\quad|"
-		case "diamond": latexSymbol = "Diamond"
-		case "square": latexSymbol = ""
-		case "|__": latexSymbol = "lfloor"
-		case "__|": latexSymbol = "rfloor"
-		case "|~": latexSymbol = "lceil"
-		case "~|": latexSymbol = "rceil"
-		case "CC": latexSymbol = "mathbb{C}"
-		case "NN": latexSymbol = "mathbb{N}"
-		case "QQ": latexSymbol = "mathbb{Q}"
-		case "RR": latexSymbol = "mathbb{R}"
-		case "ZZ": latexSymbol = "mathbb{Z}"
+	// operation symbols
+	case "*": latexSymbol = "cdot"
+	case "**": return "*"
+	case "***": latexSymbol = "star"
+	case "//": return "/"
+	case "\\\\": return "\\ "
+	case "xx": latexSymbol = "times"
+	case "-:": latexSymbol = "div"
+	case "@": latexSymbol = "circ"
+	case "o+": latexSymbol = "oplus"
+	case "ox": latexSymbol = "otimes"
+	case "o.": latexSymbol = "odot"
+	case "^^": latexSymbol = "land"
+	case "^^^": latexSymbol = "bigwedge"
+	case "vv": latexSymbol = "lor"
+	case "vvv": latexSymbol = "bigvee"
+	case "nn": latexSymbol = "intersection"
+	case "nnn": latexSymbol = "bigcap"
+	case "uu": latexSymbol = "union"
+	case "uuu": latexSymbol = "bigcup"
+	
+	// miscellaneous symbols
+	case "del": latexSymbol = "delta"
+	case "grad": latexSymbol = "nabla"
+	case "+-": latexSymbol = "pm"
+	case "O/": latexSymbol = "Theta"
+	case "oo": latexSymbol = "infty"
+	case "/_": latexSymbol = "angle"
+	case ":.": latexSymbol = "therefore"
+	case "|cdots|": return "|\\cdots"
+	case "|quad|": return "|\\quad|"
+	case "diamond": latexSymbol = "Diamond"
+	case "square": latexSymbol = ""
+	case "|__": latexSymbol = "lfloor"
+	case "__|": latexSymbol = "rfloor"
+	case "|~": latexSymbol = "lceil"
+	case "~|": latexSymbol = "rceil"
+	case "CC": latexSymbol = "mathbb{C}"
+	case "NN": latexSymbol = "mathbb{N}"
+	case "QQ": latexSymbol = "mathbb{Q}"
+	case "RR": latexSymbol = "mathbb{R}"
+	case "ZZ": latexSymbol = "mathbb{Z}"
 
-		// relation symbols
-		case "!=": latexSymbol = "neq"
-		case "<=": latexSymbol = "leq"
-		case ">=": latexSymbol = "geq"
-		case "-<": latexSymbol = "prec"
-		case ">-": latexSymbol = "succ"
-		case "!in": latexSymbol = "notin"
-		case "sub": latexSymbol = "subset"
-		case "sube": latexSymbol = "subseteq"
-		case "sup": latexSymbol = "supset"
-		case "supe": latexSymbol = "supseteq"
-		case "-=": latexSymbol = "equiv"
-		case "~=": latexSymbol = "cong"
-		case "~~": latexSymbol = "approx"
-		case "prop": latexSymbol = "propto"
+	// relation symbols
+	case "!=": latexSymbol = "neq"
+	case "<=": latexSymbol = "leq"
+	case ">=": latexSymbol = "geq"
+	case "-<": latexSymbol = "prec"
+	case ">-": latexSymbol = "succ"
+	case "!in": latexSymbol = "notin"
+	case "sub": latexSymbol = "subset"
+	case "sube": latexSymbol = "subseteq"
+	case "sup": latexSymbol = "supset"
+	case "supe": latexSymbol = "supseteq"
+	case "-=": latexSymbol = "equiv"
+	case "~=": latexSymbol = "cong"
+	case "~~": latexSymbol = "approx"
+	case "prop": latexSymbol = "propto"
 
-		default: latexSymbol = symbol
-			
+	default: latexSymbol = symbol			
 	}
 	// single letters shouldn't have \ prepended
 	if count(latexSymbol) == 1 || latexSymbol.toInt() != nil {
@@ -306,5 +404,4 @@ func latexForConstantSymbol(symbol: String) -> String {
 	}
 	return "\\\(latexSymbol) "
 }
-
 ---

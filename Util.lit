@@ -1,3 +1,6 @@
+@code_type Swift .swift
+@compiler swiftc
+@add_css literature_style_override.css
 @title Utilities | AsciiMath to LaTeX
 
 @s Introduction

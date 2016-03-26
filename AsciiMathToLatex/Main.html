@@ -88,7 +88,7 @@ backslashes and saves the user keystrokes by requiring less explicit instruction
 </p>
 
 </div>
-<a name="1:2"><div class="section"><h4>2. File Structure</h4></a>
+<a name="1:2"><div class="section"><h4>2. Module Structure</h4></a>
 <p>The entry point to the program, our main file will take in the AsciiMath equation from stdin, and initialize the
 the parsing process. If the parser is successful, the LaTeX output will then be printed to the console. Note that 
 this file acts as a script, and is not encapsulated in a class. As such, the lines will be executed sequentially
@@ -96,11 +96,11 @@ starting from the top.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>main.swift</strong> <a href="AsciiMathToLatex.html#1:2">2</a>}</span>
+<span class="codeblock_name">{<strong>main.swift</strong> <a href="Main.html#1:2">2</a>}</span>
 <pre class="prettyprint lang-swift">
-<span class="nocode pln">{Imports, <a href="AsciiMathToLatex.html#1:3">3</a>}</span>
-<span class="nocode pln">{Process input, <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
-<span class="nocode pln">{Print output, <a href="AsciiMathToLatex.html#1:6">6</a>}</span>
+<span class="nocode pln">{Imports, <a href="Main.html#1:3">3</a>}</span>
+<span class="nocode pln">{Process input, <a href="Main.html#1:4">4</a>}</span>
+<span class="nocode pln">{Print output, <a href="Main.html#1:6">6</a>}</span>
 </pre>
 
 
@@ -112,13 +112,13 @@ starting from the top.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Imports <a href="AsciiMathToLatex.html#1:3">3</a>}</span>
+<span class="codeblock_name">{Imports <a href="Main.html#1:3">3</a>}</span>
 <pre class="prettyprint lang-swift">
 import Foundation
 </pre>
 
 
-<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
 </div>
 </div>
 <a name="1:4"><div class="section"><h4>4. Processing Input</h4></a>
@@ -126,23 +126,23 @@ import Foundation
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Process input <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<span class="codeblock_name">{Process input <a href="Main.html#1:4">4</a>}</span>
 <pre class="prettyprint lang-swift">
 let stdin = NSFileHandle.fileHandleWithStandardInput()
 let inputData = stdin.availableData;
-<span class="nocode pln">{Check input, <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
-<span class="nocode pln">{Parse input, <a href="AsciiMathToLatex.html#1:5">5</a>}</span>
+<span class="nocode pln">{Check input, <a href="Main.html#1:4">4</a>}</span>
+<span class="nocode pln">{Parse equation, <a href="Main.html#1:5">5</a>}</span>
 </pre>
 
 
-<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
 </div>
 <p>Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
 user and exit if no input was passed.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Check input <a href="AsciiMathToLatex.html#1:4">4</a>}</span>
+<span class="codeblock_name">{Check input <a href="Main.html#1:4">4</a>}</span>
 <pre class="prettyprint lang-swift">
 let rawInputText = NSString(data: inputData, encoding: NSUTF8StringEncoding)
 if (rawInputText == nil) {
@@ -159,14 +159,14 @@ println(asciiMathText)
 
 </div>
 </div>
-<a name="1:5"><div class="section"><h4>5. Parsing input</h4></a>
+<a name="1:5"><div class="section"><h4>5. Parsing equation</h4></a>
 <p>At this point, our input equation is ready for parsing. We create a new parser object with the input equation,
 and it then parses the input. If an error was encountered, the program exits. Note that the actual precise (and more useful)
 error is output to the console during the parsing process.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Parse input <a href="AsciiMathToLatex.html#1:5">5</a>}</span>
+<span class="codeblock_name">{Parse equation <a href="Main.html#1:5">5</a>}</span>
 <pre class="prettyprint lang-swift">
 let parser = Parser(amEquation: asciiMathText)
 if !parser.parseInput() {
@@ -176,7 +176,7 @@ if !parser.parseInput() {
 </pre>
 
 
-<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:4">4</a></p>
+<p class="seealso">Used in section <a href="Main.html#1:4">4</a></p>
 </div>
 </div>
 <a name="1:6"><div class="section"><h4>6. Outputting LaTeX</h4></a>
@@ -185,14 +185,14 @@ its AST to LaTeX and print it to the console. After this is done, the program ex
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Print output <a href="AsciiMathToLatex.html#1:6">6</a>}</span>
+<span class="codeblock_name">{Print output <a href="Main.html#1:6">6</a>}</span>
 <pre class="prettyprint lang-swift">
 println("LaTeX Equation:")
 println(parser.convertToLatex())
 </pre>
 
 
-<p class="seealso">Used in section <a href="AsciiMathToLatex.html#1:2">2</a></p>
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
 </div>
 
 </div>

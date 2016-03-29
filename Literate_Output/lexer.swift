@@ -6,7 +6,7 @@ class Lexer {
 	init(amEquation: String) {
 		self.amEquation = amEquation
 		allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
-					  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
+					  greekSymbols, relationSymbols, operationSymbols, miscSymbols, arrowSymbols].flatMap { $0 }
 	}
 
 	func getNextSymbol() -> String? {
@@ -36,7 +36,8 @@ class Lexer {
 		var longestMatch = ""
 		for symbol in allSymbols {
 			let symLength = count(symbol)
-			if currentLoc + symLength <= count(amEquation)
+			
+			if currentLoc-1 + symLength <= count(amEquation)
 			&& amEquation[currentLoc-1..<currentLoc+symLength-1] == symbol
 			&& symLength > count(longestMatch) {
 				longestMatch = amEquation[currentLoc-1..<currentLoc+symLength-1]
@@ -55,6 +56,16 @@ class Lexer {
 			return nil
 		}
 		return amEquation[currentLoc]
+	}
+
+	func peekNextSymbol() -> String? {
+		if (currentLoc >= count(amEquation)) {
+			return nil
+		}
+	    let currentLocPre = currentLoc
+	    let nextSymbol = getNextSymbol()
+	    currentLoc = currentLocPre
+	    return nextSymbol
 	}
 
 	private func getNextCharacter() -> Character? {

@@ -57,8 +57,6 @@ if (rawInputText == nil) {
 }
 
 let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-println("AsciiMath Equation:")
-println(asciiMathText)
 ---
 
 @s Parsing equation
@@ -77,6 +75,5 @@ if !parser.parseInput() {
 Once the input's been parsed and an AST has been generated, we call the appropriate method on our parser to convert
 its AST to LaTeX and print it to the console. After this is done, the program exits.
 --- Print output
-println("LaTeX Equation:")
 println(parser.convertToLatex())
 ---

@@ -113,6 +113,7 @@ follows the current location in the string, or if an error is encountered, `nil`
 --- Get next simple expression
 private func getNextSimpleExpression() -> SimpleExpression? {
 	var currentSymbolOpt = lexer.getNextSymbol()
+
 	if currentSymbolOpt == nil {
 		println("Error. Expected symbol in simple expression")
 		return nil
@@ -144,8 +145,8 @@ to ignore that closing delimiter by increasing the lexer's current location in t
 --- Parse lEr rule
 if let nextExpression = getNextExpression() {
 	let delimType = DelimiterType(str: currentSymbol)
-	if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-		lexer.currentLoc++
+	if let nextSymbol = lexer.peekNextSymbol() where nextSymbol == delimType.rightString() {
+		lexer.currentLoc += count(delimType.rightString())
 		return DelimitedSE(expr: nextExpression, bracketType: delimType)
 	} else {
 		println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
@@ -202,23 +203,23 @@ private func getNextExpression() -> Expression? {
 	}
 	let simpleExpression = simpleExpressionOpt!
 	var currentExpression: Expression?
-	var nextCharacter = lexer.peekNextCharacter()
+	var nextSym = lexer.peekNextSymbol()
 
-	if nextCharacter == nil || contains(rightDelimiters, String(nextCharacter!)) {
+	if nextSym == nil || contains(rightDelimiters, String(nextSym!)) {
 		return SimpleExpressionE(simpleExpr: simpleExpression)
 	}
 	
-	if !contains(expressionSymbols, String(nextCharacter!)) {
+	if !contains(expressionSymbols, String(nextSym!)) {
 		@{Parse SE rule}
 	}
 	
 	if let nextSimpleExpression = getNextSimpleExpression() {
-		switch (nextCharacter!) {		
+		switch (nextSym!) {		
 		case "/":
 			currentExpression = FractionE(top: simpleExpression, bottom: nextSimpleExpression)
 
 		case "_":
-			if (lexer.peekNextCharacter() == "^") {
+			if (lexer.peekNextSymbol() == "^") {
 				@{Parse S_S^S rule}
 			} else {
 				currentExpression = SubscriptE(base: simpleExpression, sub: nextSimpleExpression)
@@ -266,7 +267,7 @@ next character is not a right delimiter, as right delimiters indicate the end of
 `lEr` simple expression rule.
 --- Check for EE rule
 if currentExpression != nil && lexer.currentLoc < count(amEquation) - 1
-&& !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
+&& !contains(rightDelimiters, lexer.peekNextSymbol()!) {
 	if let nextE = getNextExpression() {
 		return SequenceE(e1: currentExpression!, e2: nextE)
 	} else {

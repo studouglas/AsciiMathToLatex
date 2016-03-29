@@ -396,6 +396,31 @@ private func latexForConstantSymbol(symbol: String) -> String {
 	case "~~": latexSymbol = "approx"
 	case "prop": latexSymbol = "propto"
 
+	// logical symbols
+	case "and": latexSymbol = ""
+	case "or": latexSymbol = ""
+	case "not": latexSymbol = ""
+	case "=>": latexSymbol = ""
+	case "if": latexSymbol = ""
+	case "iff": latexSymbol = ""
+	case "AA": latexSymbol = ""
+	case "_|_": latexSymbol = ""
+	case "TT": latexSymbol = ""
+	case "|--": latexSymbol = ""
+	case "|==": latexSymbol = ""
+
+	// arrow symbols
+	case "uarr": latexSymbol = "uparrow"
+	case "darr": latexSymbol = "downarrow"
+	case "rarr": latexSymbol = "rightarrow"
+	case "->": latexSymbol = "rightarrow"
+	case "|->": latexSymbol = "longmapsto"
+	case "larr": latexSymbol = "leftarrow"
+	case "harr": latexSymbol = "leftrightarrow"
+	case "rArr": latexSymbol = "Rightarrow"
+	case "lArr": latexSymbol = "Leftarrow"
+	case "hArr": latexSymbol = "Leftrightarrow"
+
 	default: latexSymbol = symbol			
 	}
 	// single letters shouldn't have \ prepended

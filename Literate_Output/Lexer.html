@@ -93,9 +93,10 @@ class Lexer {
 <span class="nocode pln">	{Get symbol, <a href="Lexer.html#1:5">5</a>}</span>
 <span class="nocode pln">	{Get multiple character symbol, <a href="Lexer.html#1:5">5</a>}</span>
 <span class="nocode pln">	{Peek character, <a href="Lexer.html#1:6">6</a>}</span>
-<span class="nocode pln">	{Get character, <a href="Lexer.html#1:7">7</a>}</span>
+<span class="nocode pln">	{Peek symbol, <a href="Lexer.html#1:7">7</a>}</span>
+<span class="nocode pln">	{Get character, <a href="Lexer.html#1:8">8</a>}</span>
 }
-<span class="nocode pln">{Symbols, <a href="Lexer.html#1:8">8</a>}</span>
+<span class="nocode pln">{Symbols, <a href="Lexer.html#1:9">9</a>}</span>
 </pre>
 
 
@@ -130,7 +131,7 @@ of symbols and combines them into one array to simplify checking for a match.
 init(amEquation: String) {
 	self.amEquation = amEquation
 	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
-				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
+				  greekSymbols, relationSymbols, operationSymbols, miscSymbols, arrowSymbols].flatMap { $0 }
 }
 </pre>
 
@@ -204,7 +205,8 @@ private func getMulticharSymbol() -&gt; String? {
 	var longestMatch = ""
 	for symbol in allSymbols {
 		let symLength = count(symbol)
-		if currentLoc + symLength &lt;= count(amEquation)
+		
+		if currentLoc-1 + symLength &lt;= count(amEquation)
 		&amp;&amp; amEquation[currentLoc-1..&lt;currentLoc+symLength-1] == symbol
 		&amp;&amp; symLength &gt; count(longestMatch) {
 			longestMatch = amEquation[currentLoc-1..&lt;currentLoc+symLength-1]
@@ -225,7 +227,7 @@ private func getMulticharSymbol() -&gt; String? {
 </div>
 <a name="1:6"><div class="section"><h4>6. Peek Character</h4></a>
 <p>The peek function allows the caller to see what the next character is (or if it is <code>nil</code>) without 
-modifyin the current location in the string.
+modifying the current location in the string.
 </p>
 
 <div class="codeblock">
@@ -243,13 +245,36 @@ func peekNextCharacter() -&gt; Character? {
 <p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
 </div>
 </div>
-<a name="1:7"><div class="section"><h4>7. Get Character</h4></a>
+<a name="1:7"><div class="section"><h4>7. Peek Symbol</h4></a>
+<p>The peek function allows the caller to see what the next symbol is (or if it is <code>nil</code>) without 
+modifying the current location in the string.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Peek symbol <a href="Lexer.html#1:7">7</a>}</span>
+<pre class="prettyprint lang-swift">
+func peekNextSymbol() -&gt; String? {
+	if (currentLoc &gt;= count(amEquation)) {
+		return nil
+	}
+    let currentLocPre = currentLoc
+    let nextSymbol = getNextSymbol()
+    currentLoc = currentLocPre
+    return nextSymbol
+}
+</pre>
+
+
+<p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
+</div>
+</div>
+<a name="1:8"><div class="section"><h4>8. Get Character</h4></a>
 <p>Get character simply returns the next character in the string, or <code>nil</code> if the current location passes
 at the end of the string.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Get character <a href="Lexer.html#1:7">7</a>}</span>
+<span class="codeblock_name">{Get character <a href="Lexer.html#1:8">8</a>}</span>
 <pre class="prettyprint lang-swift">
 private func getNextCharacter() -&gt; Character? {
 	if (currentLoc &gt;= count(amEquation)) {
@@ -266,13 +291,13 @@ private func getNextCharacter() -&gt; Character? {
 <p class="seealso">Used in section <a href="Lexer.html#1:2">2</a></p>
 </div>
 </div>
-<a name="1:8"><div class="section"><h4>8. Symbols</h4></a>
+<a name="1:9"><div class="section"><h4>9. Symbols</h4></a>
 <p>The symbols supported by AsciiMath are outlined on the <a href="http://asciimath.org">homepage</a>.
 They are declared as public as they are needed by the constant expression type and the parser.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Symbols <a href="Lexer.html#1:8">8</a>}</span>
+<span class="codeblock_name">{Symbols <a href="Lexer.html#1:9">9</a>}</span>
 <pre class="prettyprint lang-swift">
 let unarySymbols = ["sqrt","text","bb","hat","bar","ul","vec","dot","ddot"]
 let binarySymbols = ["frac","root","stackrel"]

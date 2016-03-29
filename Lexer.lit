@@ -22,6 +22,7 @@ class Lexer {
 	@{Get symbol}
 	@{Get multiple character symbol}
 	@{Peek character}
+	@{Peek symbol}
 	@{Get character}
 }
 @{Symbols}
@@ -43,7 +44,7 @@ of symbols and combines them into one array to simplify checking for a match.
 init(amEquation: String) {
 	self.amEquation = amEquation
 	allSymbols = [unarySymbols, binarySymbols, leftDelimiters, rightDelimiters, expressionSymbols,
-				  greekSymbols, relationSymbols, operationSymbols, miscSymbols].flatMap { $0 }
+				  greekSymbols, relationSymbols, operationSymbols, miscSymbols, arrowSymbols].flatMap { $0 }
 }
 ---
 
@@ -95,7 +96,8 @@ private func getMulticharSymbol() -> String? {
 	var longestMatch = ""
 	for symbol in allSymbols {
 		let symLength = count(symbol)
-		if currentLoc + symLength <= count(amEquation)
+		
+		if currentLoc-1 + symLength <= count(amEquation)
 		&& amEquation[currentLoc-1..<currentLoc+symLength-1] == symbol
 		&& symLength > count(longestMatch) {
 			longestMatch = amEquation[currentLoc-1..<currentLoc+symLength-1]
@@ -112,13 +114,28 @@ private func getMulticharSymbol() -> String? {
 
 @s Peek Character
 The peek function allows the caller to see what the next character is (or if it is `nil`) without 
-modifyin the current location in the string.
+modifying the current location in the string.
 --- Peek character
 func peekNextCharacter() -> Character? {
 	if (currentLoc >= count(amEquation)) {
 		return nil
 	}
 	return amEquation[currentLoc]
+}
+---
+
+@s Peek Symbol
+The peek function allows the caller to see what the next symbol is (or if it is `nil`) without 
+modifying the current location in the string.
+--- Peek symbol
+func peekNextSymbol() -> String? {
+	if (currentLoc >= count(amEquation)) {
+		return nil
+	}
+    let currentLocPre = currentLoc
+    let nextSymbol = getNextSymbol()
+    currentLoc = currentLocPre
+    return nextSymbol
 }
 ---
 

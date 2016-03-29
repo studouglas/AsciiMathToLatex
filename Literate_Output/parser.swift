@@ -39,6 +39,7 @@ class Parser {
 
 	private func getNextSimpleExpression() -> SimpleExpression? {
 		var currentSymbolOpt = lexer.getNextSymbol()
+	
 		if currentSymbolOpt == nil {
 			println("Error. Expected symbol in simple expression")
 			return nil
@@ -55,8 +56,8 @@ class Parser {
 		if contains(leftDelimiters, currentSymbol) {
 			if let nextExpression = getNextExpression() {
 				let delimType = DelimiterType(str: currentSymbol)
-				if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-					lexer.currentLoc++
+				if let nextSymbol = lexer.peekNextSymbol() where nextSymbol == delimType.rightString() {
+					lexer.currentLoc += count(delimType.rightString())
 					return DelimitedSE(expr: nextExpression, bracketType: delimType)
 				} else {
 					println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
@@ -96,13 +97,13 @@ class Parser {
 		}
 		let simpleExpression = simpleExpressionOpt!
 		var currentExpression: Expression?
-		var nextCharacter = lexer.peekNextCharacter()
+		var nextSym = lexer.peekNextSymbol()
 	
-		if nextCharacter == nil || contains(rightDelimiters, String(nextCharacter!)) {
+		if nextSym == nil || contains(rightDelimiters, String(nextSym!)) {
 			return SimpleExpressionE(simpleExpr: simpleExpression)
 		}
 		
-		if !contains(expressionSymbols, String(nextCharacter!)) {
+		if !contains(expressionSymbols, String(nextSym!)) {
 			if let nextExpression = getNextExpression() {
 				return SimpleSequenceE(simpleExpr: simpleExpression, expr: nextExpression)
 			} else {
@@ -113,12 +114,12 @@ class Parser {
 		}
 		
 		if let nextSimpleExpression = getNextSimpleExpression() {
-			switch (nextCharacter!) {		
+			switch (nextSym!) {		
 			case "/":
 				currentExpression = FractionE(top: simpleExpression, bottom: nextSimpleExpression)
 	
 			case "_":
-				if (lexer.peekNextCharacter() == "^") {
+				if (lexer.peekNextSymbol() == "^") {
 					if let finalSimpleExpression = getNextSimpleExpression() {
 						currentExpression = SubSuperscriptE(base: simpleExpression, sub: nextSimpleExpression, superscript: finalSimpleExpression)	
 					} else {
@@ -137,7 +138,7 @@ class Parser {
 			}
 	
 			if currentExpression != nil && lexer.currentLoc < count(amEquation) - 1
-			&& !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
+			&& !contains(rightDelimiters, lexer.peekNextSymbol()!) {
 				if let nextE = getNextExpression() {
 					return SequenceE(e1: currentExpression!, e2: nextE)
 				} else {

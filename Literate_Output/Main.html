@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Parser | AsciiMath to LaTeX</title>
+<title>AsciiMath to LaTeX Converter</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -67,391 +67,129 @@ h4 {
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>Parser | AsciiMath to LaTeX</h1>
-<a name="1:1"><div class="section"><h4>1. Description</h4></a>
-<p>The parser is initialized with the AsciiMath equation (as text), and encapsulates functionality
-related to generating a structured representation of the equation and converting that structure
-to LaTeX. The structure is derived from the grammar definition (in BNR form) presented below.
+<h1>AsciiMath to LaTeX Converter</h1>
+<a name="1:1"><div class="section"><h4>1. Introduction</h4></a>
+<p>The proposed project takes a math equation written in <a href="http://asciimath.org">AsciiMath</a>
+as input and converts it into valid LaTeX source. The tool first parses the AsciiMath input, outputting syntax errors 
+as they are encountered. It then generates an AST representing the equation which is converted into LaTeX math notation
+and output as text to the console.
+</p>
+<p>The purpose of the project is to allow for a simpler, more readable syntax for math equations to be used with 
+the superior typesetting abilities of LaTeX. 
+</p>
+<p>In terms of formatting, LaTeX is unparalleled for complex math equations. As such, it has become the industry 
+standard and is widely used and supported throughout academia and in math-related fields. Personally, I've
+been using LaTeX for several years and continue to use it to format math equations and take notes.
+</p>
+<p>However, the syntax to write these math equations is verbose, difficult-to-read, and slow to type. AsciiMath is
+a language that implements a subset of LaTeX's math functionality and is used for displaying math equations in
+HTML documents. It uses a much simpler syntax that prefers spaces and parentheses over braces and 
+backslashes and saves the user keystrokes by requiring less explicit instructions.
 </p>
 
 </div>
-<a name="1:2"><div class="section"><h4>2. Grammar</h4></a>
-<p>The following is a (slightly) modified version of the AsciiMath grammar from the <a href="http://asciimath.org">AsciiMath</a>
-webpage. To the right of the grammar rules are more readable names for each type of symbol, which will
-be used throughout the program. Note also that for the constant and unary symbols there are far too 
-many to be listed below, the full list can be found on the <a href="http://asciimath.org">AsciiMath</a> homepage.
+<a name="1:2"><div class="section"><h4>2. Module Structure</h4></a>
+<p>The entry point to the program, our main file will take in the AsciiMath equation from stdin, and initialize the
+the parsing process. If the parser is successful, the LaTeX output will then be printed to the console. Note that 
+this file acts as a script, and is not encapsulated in a class. As such, the lines will be executed sequentially
+starting from the top.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Grammar definition <a href="Parser.html#1:2">2</a>}</span>
+<span class="codeblock_name">{<strong>main.swift</strong> <a href="Main.html#1:2">2</a>}</span>
 <pre class="prettyprint lang-swift">
-AsciiMath grammar (BNR)
-c ::= [A-Za-z] | greek letters | numbers | other constant symbols    constantSymbols
-u ::= sqrt | text | bb | other unary symbols for font commands       unarySymbols
-b ::= frac | root | stackrel                                         binarySymbols
-l ::= ( | [ | { | (: | {:                                            leftDelimiters
-r ::= ) | ] | } | :) | :}                                            rightDelimiters
-S ::= c | lEr | uS | bSS                                             simpleExpression
-E ::= SE | S/S | S_S | S^S | S_S^S | S | EE                          expression
+<span class="nocode pln">{Imports, <a href="Main.html#1:3">3</a>}</span>
+<span class="nocode pln">{Process input, <a href="Main.html#1:4">4</a>}</span>
+<span class="nocode pln">{Print output, <a href="Main.html#1:6">6</a>}</span>
 </pre>
 
 
 
 </div>
 </div>
-<a name="1:3"><div class="section"><h4>3. Module Structure</h4></a>
-<p>The parser class maintains several member variables and exposes two functions in its interface to parse the
-equation and to convert it to LaTeX. 
+<a name="1:3"><div class="section"><h4>3. Imports</h4></a>
+<p>The input is read from stdin, which requires the Foundation package.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{<strong>parser.swift</strong> <a href="Parser.html#1:3">3</a>}</span>
+<span class="codeblock_name">{Imports <a href="Main.html#1:3">3</a>}</span>
 <pre class="prettyprint lang-swift">
-class Parser {
-<span class="nocode pln">	{Parser member variables, <a href="Parser.html#1:4">4</a>}</span>
-<span class="nocode pln">	{Parser constructor, <a href="Parser.html#1:4">4</a>}</span>
-<span class="nocode pln">	{Parse input, <a href="Parser.html#1:5">5</a>}</span>
-<span class="nocode pln">	{Convert to latex, <a href="Parser.html#1:6">6</a>}</span>
-<span class="nocode pln">	{Private functions, <a href="Parser.html#1:7">7</a>}</span>
+import Foundation
+</pre>
+
+
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
+</div>
+</div>
+<a name="1:4"><div class="section"><h4>4. Processing Input</h4></a>
+<p>Initially, the program will read the equation from stdin and save it to <code>inputData</code> before initializing the parsing process.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Process input <a href="Main.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
+let stdin = NSFileHandle.fileHandleWithStandardInput()
+let inputData = stdin.availableData;
+<span class="nocode pln">{Check input, <a href="Main.html#1:4">4</a>}</span>
+<span class="nocode pln">{Parse equation, <a href="Main.html#1:5">5</a>}</span>
+</pre>
+
+
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
+</div>
+<p>Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
+user and exit if no input was passed.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Check input <a href="Main.html#1:4">4</a>}</span>
+<pre class="prettyprint lang-swift">
+let rawInputText = NSString(data: inputData, encoding: NSUTF8StringEncoding)
+if (rawInputText == nil) {
+    println("Usage: 'echo 'x + y' | ./main")
+    exit(1)
+}
+
+let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+</pre>
+
+
+
+</div>
+</div>
+<a name="1:5"><div class="section"><h4>5. Parsing equation</h4></a>
+<p>At this point, our input equation is ready for parsing. We create a new parser object with the input equation,
+and it then parses the input. If an error was encountered, the program exits. Note that the actual precise (and more useful)
+error is output to the console during the parsing process.
+</p>
+
+<div class="codeblock">
+<span class="codeblock_name">{Parse equation <a href="Main.html#1:5">5</a>}</span>
+<pre class="prettyprint lang-swift">
+let parser = Parser(amEquation: asciiMathText)
+if !parser.parseInput() {
+	println("Error parsing equation '\(asciiMathText)'. Exiting...")
+	exit(2)
 }
 </pre>
 
 
-
+<p class="seealso">Used in section <a href="Main.html#1:4">4</a></p>
 </div>
 </div>
-<a name="1:4"><div class="section"><h4>4. Initialization &amp; Member Variables</h4></a>
-<p>The class will be initialized with a string representing the AsciiMath equation, and will initialize
-its own Lexer with that same equation. It was decided to keep the Lexer a private object of the parser
-to simplify the interface, and to adhere to the principle of "information hiding". Since the
-caller doesn't <emph>need</emph> to know about the lexer, it is kept hidden behind the parser's interface.
+<a name="1:6"><div class="section"><h4>6. Outputting LaTeX</h4></a>
+<p>Once the input's been parsed and an AST has been generated, we call the appropriate method on our parser to convert
+its AST to LaTeX and print it to the console. After this is done, the program exits.
 </p>
 
 <div class="codeblock">
-<span class="codeblock_name">{Parser constructor <a href="Parser.html#1:4">4</a>}</span>
+<span class="codeblock_name">{Print output <a href="Main.html#1:6">6</a>}</span>
 <pre class="prettyprint lang-swift">
-init(amEquation: String) {
-    self.amEquation = amEquation
-    self.lexer = Lexer(amEquation: amEquation)
-}
+println(parser.convertToLatex())
 </pre>
 
 
-<p class="seealso">Used in section <a href="Parser.html#1:3">3</a></p>
-</div>
-<p>The parser will keep a copy of the equation as well as a Lexer object which will both be initialized as soon as the
-Parser is. Additionally, the root node of the generated AST will be stored in <code>astRoot</code> once parsing is completed.
-If parsing fails, the <code>astRoot</code> will be nil.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parser member variables <a href="Parser.html#1:4">4</a>}</span>
-<pre class="prettyprint lang-swift">
-private let amEquation: String!
-private var lexer: Lexer!
-private var astRoot: Expression?
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:3">3</a></p>
-</div>
-</div>
-<a name="1:5"><div class="section"><h4>5. Parsing Input</h4></a>
-<p>This function will parse the input, returning false if an error is encountered, and true otherwise. If the parsing is
-successful, the member variable <code>astRoot</code> will store the value of the root node of the AST. Note that the core functionality
-of the parser is not in this function, but the <code>getNextExpression</code> function instead.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse input <a href="Parser.html#1:5">5</a>}</span>
-<pre class="prettyprint lang-swift">
-func parseInput() -&gt; Bool {
-	astRoot = getNextExpression()
-	
-	if astRoot != nil {
-		return true
-	} else {
-		println("Error parsing input. AST is nil.")
-		return false
-	}
-}
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:3">3</a></p>
-</div>
-</div>
-<a name="1:6"><div class="section"><h4>6. Converting to LaTeX</h4></a>
-<p>Once the input is validated and parsed, the AST needs to be converted to LaTeX source code. There are several
-of "cleanup" steps that need to be performed (removing extra spaces, using parentheses that match the equation height etc.).
-Once the cleanup steps have completed, the resulting LaTeX string is returned.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Convert to latex <a href="Parser.html#1:6">6</a>}</span>
-<pre class="prettyprint lang-swift">
-func convertToLatex() -&gt; String {
-	if astRoot != nil {
-		var latexStr = astRoot!.toLatexString()
-		latexStr = latexStr.stringByReplacingOccurrencesOfString("  ", withString: " ")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString("{(", withString: "{")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString(")}", withString: "}")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString(" }", withString: "}")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString(" _", withString: "_")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString(" ^", withString: "^")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString("(", withString: "\\left(")
-		latexStr = latexStr.stringByReplacingOccurrencesOfString(")", withString: "\\right)")
-		return latexStr
-	} else {
-		println("Error converting to LaTeX. AST is nil.")
-		return ""
-	}
-}
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:3">3</a></p>
-</div>
-</div>
-<a name="1:7"><div class="section"><h4>7. Private Functions</h4></a>
-<p>The two private functions for getting the next expression or simple expression contain the core functionality
-of the Parser. These functions use the AsciiMath grammar to generate an AST representing the input equation.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Private functions <a href="Parser.html#1:7">7</a>}</span>
-<pre class="prettyprint lang-swift">
-<span class="nocode pln">{Get next simple expression, <a href="Parser.html#1:8">8</a>}</span>
-<span class="nocode pln">{Get next expression, <a href="Parser.html#1:9">9</a>}</span>
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:3">3</a></p>
-</div>
-</div>
-<a name="1:8"><div class="section"><h4>8. Simple Expression</h4></a>
-<p>This function will return the next simple expression in the text, as per the grammar definition. If no simple expression
-follows the current location in the string, or if an error is encountered, <code>nil</code> is returned.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Get next simple expression <a href="Parser.html#1:8">8</a>}</span>
-<pre class="prettyprint lang-swift">
-private func getNextSimpleExpression() -&gt; SimpleExpression? {
-	var currentSymbolOpt = lexer.getNextSymbol()
-	if currentSymbolOpt == nil {
-		println("Error. Expected symbol in simple expression")
-		return nil
-	}
-	if contains(expressionSymbols, currentSymbolOpt!) {
-		currentSymbolOpt = lexer.getNextSymbol()
-		if (currentSymbolOpt == nil) {
-			println("Error. Expected symbol after expression operator")
-			return nil
-		}
-	}
-	let currentSymbol = currentSymbolOpt!
-
-	if contains(leftDelimiters, currentSymbol) {
-<span class="nocode pln">		{Parse lEr rule, <a href="Parser.html#1:8">8</a>}</span>
-	} else if contains(unarySymbols, currentSymbol) {
-<span class="nocode pln">		{Parse uS rule, <a href="Parser.html#1:8">8</a>}</span>
-	} else if contains(binarySymbols, currentSymbol) {
-<span class="nocode pln">		{Parse bSS rule, <a href="Parser.html#1:8">8</a>}</span>
-	} else {
-		return ConstantSE(str: currentSymbol)
-	}
-}
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:7">7</a></p>
-</div>
-<p>If we are matching to the <code>lEr</code> rule (an expression delimited by brackets, braces or parentheses) we need to ensure
-that after we have the <code>E</code>, the correct closing delimiter occurs. If this is indeed the case (as it should be), we want
-to ignore that closing delimiter by increasing the lexer's current location in the string.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse lEr rule <a href="Parser.html#1:8">8</a>}</span>
-<pre class="prettyprint lang-swift">
-if let nextExpression = getNextExpression() {
-	let delimType = DelimiterType(str: currentSymbol)
-	if let nextChar = lexer.peekNextCharacter() where String(nextChar) == delimType.rightString() {
-		lexer.currentLoc++
-		return DelimitedSE(expr: nextExpression, bracketType: delimType)
-	} else {
-		println("Error. '\(delimType.rightString())' expected after expression '\(nextExpression.toString())'")
-		return nil
-	} 
-} else {
-	println("Error. expected expression after '\(currentSymbol)'")
-	return nil
-}
-</pre>
-
-
-
-</div>
-<p>A unary operator followed by a simple expression is a relatively straightforward case. The only possible error is if
-there is not a simple expression following the operator.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse uS rule <a href="Parser.html#1:8">8</a>}</span>
-<pre class="prettyprint lang-swift">
-if let nextSimpleExpression = getNextSimpleExpression() {
-	return UnarySE(op: currentSymbol, simpleExpr: nextSimpleExpression)
-} else {
-	println("Error. Simple expression expected after '\(currentSymbol)'")
-	return nil
-}
-</pre>
-
-
-
-</div>
-<p>The binary operator is a similar case to the unary operator, except that we require 
-two simple expressions to follow the operator.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse bSS rule <a href="Parser.html#1:8">8</a>}</span>
-<pre class="prettyprint lang-swift">
-if let nextSimpleExpression = getNextSimpleExpression(), 
-	   finalSimpleExpression = getNextSimpleExpression() {
-	return BinarySE(op: currentSymbol, leftSE: nextSimpleExpression, rightSE: finalSimpleExpression)
-} else {
-	println("Error. Simple expression expected after '\(currentSymbol)'")
-	return nil
-}
-</pre>
-
-
-
-</div>
-</div>
-<a name="1:9"><div class="section"><h4>9. Expression</h4></a>
-<p>Parsing expressions is a little more complex than simple expressions (as can be expected). All parse rules for 
-expressions start with a simple expression (except <code>EE</code>, but that's a special case). So firstly we get the next
-simple expression and verify it is non-nil. We then check the character following that simple expression. If we're
-at the end of our string or it's a right delimiter, we just return the simple expression we fetched initially. If
-it is not one of the special expression symbols ['_','^','/'], then it must be the beginning of a new expression, i.e.
-the <code>SE</code> rule in our grammar. In all these cases, the appropriate Expression object is returned and the function exits.
-</p>
-<p>After addressing all those cases, we know that the next expression must be a fraction or a sub/super-script. When we
-parse this, we do generate the Expression object representing it, but do not return it immediately. This is because 
-we must check if there is another expression following it. If there is, we return a sequence expression consisting of the first
-fraction or sub/super-script expression followed by the next expression (which could be any of the possible expression types).
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Get next expression <a href="Parser.html#1:9">9</a>}</span>
-<pre class="prettyprint lang-swift">
-private func getNextExpression() -&gt; Expression? {
-	let simpleExpressionOpt = getNextSimpleExpression()
-	if (simpleExpressionOpt == nil) {
-		return nil
-	}
-	let simpleExpression = simpleExpressionOpt!
-	var currentExpression: Expression?
-	var nextCharacter = lexer.peekNextCharacter()
-
-	if nextCharacter == nil || contains(rightDelimiters, String(nextCharacter!)) {
-		return SimpleExpressionE(simpleExpr: simpleExpression)
-	}
-	
-	if !contains(expressionSymbols, String(nextCharacter!)) {
-<span class="nocode pln">		{Parse SE rule, <a href="Parser.html#1:9">9</a>}</span>
-	}
-	
-	if let nextSimpleExpression = getNextSimpleExpression() {
-		switch (nextCharacter!) {		
-		case "/":
-			currentExpression = FractionE(top: simpleExpression, bottom: nextSimpleExpression)
-
-		case "_":
-			if (lexer.peekNextCharacter() == "^") {
-<span class="nocode pln">				{Parse S_S^S rule, <a href="Parser.html#1:9">9</a>}</span>
-			} else {
-				currentExpression = SubscriptE(base: simpleExpression, sub: nextSimpleExpression)
-			}
-
-		case "^":
-			currentExpression = SuperscriptE(base: simpleExpression, superscript: nextSimpleExpression)
-		
-		default: break
-		}
-
-<span class="nocode pln">		{Check for EE rule, <a href="Parser.html#1:9">9</a>}</span>
-		
-	}
-	return currentExpression
-}
-</pre>
-
-
-<p class="seealso">Used in section <a href="Parser.html#1:7">7</a></p>
-</div>
-<p>The most common type of expression consists of a simple expression followed by another expression. In this case, the
-only possible error (since we already verified the simple expression) would be no expression following it.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse SE rule <a href="Parser.html#1:9">9</a>}</span>
-<pre class="prettyprint lang-swift">
-if let nextExpression = getNextExpression() {
-	return SimpleSequenceE(simpleExpr: simpleExpression, expr: nextExpression)
-} else {
-	println("Error. Expression in SE case expected following '\(simpleExpression.toString())'")
-	return nil
-}
-</pre>
-
-
-
-</div>
-<p>This is a more complex case of sub or superscript. Note that the subscript must come first, as per AsciiMath standard. The
-possible error (since we've already verified the first two simple expressions) is that the third simple expression, the superscript,
-does not exist.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse S_S^S rule <a href="Parser.html#1:9">9</a>}</span>
-<pre class="prettyprint lang-swift">
-if let finalSimpleExpression = getNextSimpleExpression() {
-	currentExpression = SubSuperscriptE(base: simpleExpression, sub: nextSimpleExpression, superscript: finalSimpleExpression)	
-} else {
-	println("Error. Simple expression expected following '\(simpleExpression.toString())_\(nextSimpleExpression.toString())^'")
-	return nil
-}
-</pre>
-
-
-
-</div>
-<p>If we haven't reached the end of our string, there is a possibility that there is another expression following the
-one we just parsed. If this is the case, we return the appropriate sequence expression. We must also check that the
-next character is not a right delimiter, as right delimiters indicate the end of an expression contained within the 
-<code>lEr</code> simple expression rule.
-</p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Check for EE rule <a href="Parser.html#1:9">9</a>}</span>
-<pre class="prettyprint lang-swift">
-if currentExpression != nil &amp;&amp; lexer.currentLoc &lt; count(amEquation) - 1
-&amp;&amp; !contains(rightDelimiters, String(lexer.peekNextCharacter()!)) {
-	if let nextE = getNextExpression() {
-		return SequenceE(e1: currentExpression!, e2: nextE)
-	} else {
-		println("Error. No expression found after '\(currentExpression)', but haven't reached end of equation.")
-		return currentExpression
-	}
-}
-</pre>
-
-
-
+<p class="seealso">Used in section <a href="Main.html#1:2">2</a></p>
 </div>
 
 </div>

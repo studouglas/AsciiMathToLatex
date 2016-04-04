@@ -24,22 +24,18 @@ All the source code for *AsciiMathToLatex* as well as all the documentation (inc
 Download and install Literate from their [downloads page](http://literate.zbyedidia.webfactional.com/download.php)
 
 ### Swift Compiler
-- OS X users can install the swift compiler, <code>swiftc</code>, by installing [Xcode](https://www.google.ca/search?client=safari&rls=en&q=install+xcode&ie=UTF-8&oe=UTF-8&gfe_rd=cr&ei=7hn_VravBYON8QfU77HgDg)<br>
+- OS X users can install the swift compiler, <code>swiftc</code>, by installing [Xcode](https://www.google.ca/search?client=safari&rls=en&q=install+xcode&ie=UTF-8&oe=UTF-8&gfe_rd=cr&ei=7hn_VravBYON8QfU77HgDg) and then running
+`xcode-select install` from Terminal<br>
 - Linux users can install Swift from the compiler [homepage](https://swift.org/getting-started/#using-the-repl) 
 
 ## Building AsciiMathToLatex
-1. Navigate to the project directory in the Terminal
-2. Generate the source code and documentation from the Literate files by running `lit *.lit`
-3. Compile the swift files with: 
-```
-xcrun swiftc -sdk $(xcrun --show-sdk-path --sdk macosx) *.swift -o AsciiMathToLatex
-```
+Run `make` from the project directory.
 
 # Usage
-The AsciiMathToLatex executable takes an equation written in AsciiMath notation from <code>stdin</code> and prints out the 
+The AsciiMathToLatex executable takes an equation written in AsciiMath notation as the first argument and prints out the 
 converted LaTeX source code. For example, running: 
 ```
-echo 'x/y + sqrt(beta)' | ./AsciiMathToLatex
+./AsciiMathToLatex 'x/y + sqrt(beta)'
 ```
 
 will output the following LaTeX code: 

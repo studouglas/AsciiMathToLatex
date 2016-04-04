@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>Main | AsciiMath to LaTeX Converter</title>
+<title>Overview | AsciiMath to LaTeX Converter</title>
 <script>
 !function(){var q=null;window.PR_SHOULD_USE_CONTINUATION=!0;
 (function(){function R(a){function d(e){var b=e.charCodeAt(0);if(b!==92)return b;var a=e.charAt(1);return(b=r[a])?b:"0"<=a&&a<="7"?parseInt(e.substring(1),8):a==="u"||a==="x"?parseInt(e.substring(2),16):e.charCodeAt(1)}function g(e){if(e<32)return(e<16?"\\x0":"\\x")+e.toString(16);e=String.fromCharCode(e);return e==="\\"||e==="-"||e==="]"||e==="^"?"\\"+e:e}function b(e){var b=e.substring(1,e.length-1).match(/\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2}|\\[0-3][0-7]{0,2}|\\[0-7]{1,2}|\\[\S\s]|[^\\]/g),e=[],a=
@@ -67,95 +67,83 @@ h4 {
 </head>
 <body onload="prettyPrint()">
 <section>
-<h1>Main | AsciiMath to LaTeX Converter</h1>
-<a name="1:1"><div class="section"><h4>1. Module Structure</h4></a>
-<p>The entry point to the program, our main file will take in the AsciiMath equation from stdin, and initialize the
-the parsing process. If the parser is successful, the LaTeX output will then be printed to the console. Note that 
-this file acts as a script, and is not encapsulated in a class. As such, the lines will be executed sequentially
-starting from the top.
+<h1>Overview | AsciiMath to LaTeX Converter</h1>
+<a name="1:1"><div class="section"><h4>1. Project Overview</h4></a>
+<p>AsciiMathToLatex takes a math equation written in <a href="http://asciimath.org">AsciiMath</a>
+as input and converts it into valid LaTeX source. The tool first parses the AsciiMath input, outputting syntax errors 
+as they are encountered. It then generates an AST representing the equation which is converted into LaTeX math notation
+and output as text to the console.
+</p>
+<p>The purpose of the project is to allow for a simpler, more readable syntax for math equations to be used with 
+the superior typesetting abilities of LaTeX. 
+</p>
+<p>In terms of formatting, LaTeX is unparalleled for complex math equations. As such, it has become the industry 
+standard and is widely used and supported throughout academia and in math-related fields. Personally, I've
+been using LaTeX for several years and continue to use it to format math equations and take notes.
+</p>
+<p>However, the syntax to write these math equations is verbose, difficult-to-read, and slow to type. AsciiMath is
+a language that implements a subset of LaTeX's math functionality and is used for displaying math equations in
+HTML documents. It uses a much simpler syntax that prefers spaces and parentheses over braces and 
+backslashes and saves the user keystrokes by requiring less explicit instructions.
 </p>
 
-<div class="codeblock">
-<span class="codeblock_name">{<strong>main.swift</strong> <a href="Main.html#1:1">1</a>}</span>
-<pre class="prettyprint lang-swift">
-<span class="nocode pln">{Imports, <a href="Main.html#1:2">2</a>}</span>
-<span class="nocode pln">{Process input, <a href="Main.html#1:3">3</a>}</span>
-<span class="nocode pln">{Parse equation, <a href="Main.html#1:4">4</a>}</span>
-<span class="nocode pln">{Print output, <a href="Main.html#1:5">5</a>}</span>
-</pre>
-
-
-
 </div>
-</div>
-<a name="1:2"><div class="section"><h4>2. Imports</h4></a>
-<p>Exiting the program early as well as trimming whitepsace requires the Foundation package.
+<a name="1:2"><div class="section"><h4>2. Usage</h4></a>
+<p>The AsciiMathToLatex executable takes an equation written in AsciiMath notation as the first and only argument and prints out the 
+converted LaTeX source code. For example, running:<br>
+<code>./AsciiMathToLatex 'x/y + sqrt(beta)'</code>
+</p>
+<p>will output the following LaTeX code:<br>
+<code>\frac{x}{y} + \sqrt{\beta}</code>
+</p>
+<p>Note that you must surround the input equation in single quotes so that spaces are not treated as delimiters in the arguments list.
 </p>
 
-<div class="codeblock">
-<span class="codeblock_name">{Imports <a href="Main.html#1:2">2</a>}</span>
-<pre class="prettyprint lang-swift">
-import Foundation
-</pre>
-
-
-<p class="seealso">Used in section <a href="Main.html#1:1">1</a></p>
 </div>
-</div>
-<a name="1:3"><div class="section"><h4>3. Processing Input</h4></a>
-<p>Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
-user and exit if no input was passed.
+<a name="1:3"><div class="section"><h4>3. Installation Guide</h4></a>
+<p>All the source code for <emph>AsciiMathToLatex</emph> as well as all the documentation (including this document)
+were created using <a href="http://literate.zbyedidia.webfactional.com">Literate</a>, 
+a tool for writing programs using the <a href="http://www.literateprogramming.com">literate programming</a> 
+method. That means that the source code is contained alongside
+the documentation within the <code>.lit</code> files. Running the Literate program will
+generate both the <code>.swift</code> source files that make
+up the project and the HTML files that form the documentation. After the <code>.swift</code> 
+files are generated by Literate, the Swift compiler is
+used to create the executable.
+</p>
+<p><strong>Literate</strong><br>
+Download and install Literate from their <a href="http://literate.zbyedidia.webfactional.com/download.php">downloads page</a>
+</p>
+<p><strong>Swift Compiler</strong><br>
+-OS X users can install the swift compiler, <code>swiftc</code>, by installing 
+<a href="https://www.google.ca/search?client=safari&amp;rls=en&amp;q=install+xcode&amp;ie=UTF-8&amp;oe=UTF-8&amp;gfe_rd=cr&amp;ei=7hn_VravBYON8QfU77HgDg">Xcode</a><br>
+-Linux users can install Swift from the compiler <a href="https://swift.org/getting-started/#using-the-repl">homepage</a> 
+</p>
+<p>To build AsciiMathToLatex after installing the above dependencies, simply run <code>make</code> from the project directory.
 </p>
 
-<div class="codeblock">
-<span class="codeblock_name">{Process input <a href="Main.html#1:3">3</a>}</span>
-<pre class="prettyprint lang-swift">
-if Process.argc != 2 {
-	println("Usage: ./AsciiMathToLatex 'AsciiMath Equation Here'\n(note the single quotation marks)")
-	exit(1)
-} 
-let rawInputText = String.fromCString(Process.unsafeArgv[1])
-let asciiMathText = rawInputText!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-</pre>
-
-
-<p class="seealso">Used in section <a href="Main.html#1:1">1</a></p>
 </div>
-</div>
-<a name="1:4"><div class="section"><h4>4. Parsing equation</h4></a>
-<p>At this point, our input equation is ready for parsing. We create a new parser object with the input equation,
-and it then parses the input. If an error was encountered, the program exits. Note that the actual precise (and more useful)
-error is output to the console during the parsing process.
+<a name="1:4"><div class="section"><h4>4. Testing</h4></a>
+<p>Tests can be run by running the testing script with <code>swift run_tests.swift</code>, and their results will be printed out to the console.
+The tests themselves cover both expected cases and edge cases. For expected cases, the AsciiMathToLatex program is run with
+valid AsciiMath input, and the output is verified against the known, correct LaTeX source code. For the edge cases, the testing 
+script simply verifies that an error message is produced on bad input. It does not currently verify the quality of the error message, just that 
+the error was caught. The following inputs are tested.
 </p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Parse equation <a href="Main.html#1:4">4</a>}</span>
-<pre class="prettyprint lang-swift">
-let parser = Parser(amEquation: asciiMathText)
-if !parser.parseInput() {
-	println("Error parsing equation '\(asciiMathText)'. Exiting...")
-	exit(2)
-}
-</pre>
-
-
-<p class="seealso">Used in section <a href="Main.html#1:1">1</a></p>
-</div>
-</div>
-<a name="1:5"><div class="section"><h4>5. Outputting LaTeX</h4></a>
-<p>Once the input's been parsed and an AST has been generated, we call the appropriate method on our parser to convert
-its AST to LaTeX and print it to the console. After this is done, the program exits.
+<p>Expected cases:
 </p>
-
-<div class="codeblock">
-<span class="codeblock_name">{Print output <a href="Main.html#1:5">5</a>}</span>
-<pre class="prettyprint lang-swift">
-println(parser.convertToLatex())
-</pre>
-
-
-<p class="seealso">Used in section <a href="Main.html#1:1">1</a></p>
-</div>
+<ul>
+<li>'a/b = c'</li>
+<li>'a+b <= c^4'</li>
+<li>'a/b -= alpha_(d in RR)^42 ~= qz sqrt5'</li>
+<li>'sum_(i=1)^n i^3=((n(n+1))/2)^2'</li>
+</ul>
+<p>Edge cases:
+</p>
+<ul>
+<li>'a+(c'</li>
+<li>'b+(c + d/b'</li>
+</ul>
 
 </div>
 </body>

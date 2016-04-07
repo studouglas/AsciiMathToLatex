@@ -113,8 +113,15 @@ Download and install Literate from their <a href="http://literate.zbyedidia.webf
 -Linux users can install Swift from the compiler <a href="https://swift.org/getting-started/#using-the-repl">homepage</a> 
 </p>
 <p><strong>AsciiMathToLatex</strong><br>
-a
 </p>
+<ol>
+<li>Navigate to the project directory in the Terminal
+</li>
+<li>Generate the source code and documentation from the Literate files by running 'lit *.lit'
+</li>
+<li>Compile the swift files with 'xcrun swiftc -sdk $(xcrun --show-sdk-path --sdk macosx) *.swift -o AsciiMathToLatex'
+</li>
+</ol>
 
 </div>
 <a name="1:4"><div class="section"><h4>4. Module Structure</h4></a>

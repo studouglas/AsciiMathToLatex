@@ -25,7 +25,7 @@ import Foundation
 Convert the input into a manageable string, removing any unnecessary leading and trailing whitespace. Alert
 user and exit if no input was passed.
 --- Process input
-if Process.argc != 2 {
+if Process.argc < 2 {
 	println("Usage: ./AsciiMathToLatex 'AsciiMath Equation Here'\n(note the single quotation marks)")
 	exit(1)
 } 

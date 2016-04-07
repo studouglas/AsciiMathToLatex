@@ -1,0 +1,72 @@
+\documentclass{beamer}
+ 
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+
+\setbeamertemplate{navigation symbols}{}
+\usetheme{Luebeck}
+
+%-------------------------------------------------------
+%	TITLE PAGE
+%-------------------------------------------------------
+\title[AsciiMath to LaTeX]{AsciiMath to LaTeX}
+\subtitle{A Compiler Written in Swift}
+\institute{McMaster University}
+\author{Stuart Douglas}
+ 
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Overview}
+\tableofcontents
+\end{frame}
+
+% =================== Section =================== 
+\section{Introduction} 
+\subsection{Brief Project Overview}
+\begin{frame}
+\frametitle{Brief Project Overview}
+\textbf{Motivation}: Math syntax in \LaTeX{} is verbose, difficult-to-read, and hard-to-type\\\vspace{3mm}
+
+\textbf{Solution}: Existing language \emph{AsciiMath} implements subset of \LaTeX{}  math mode in a cleaner, more readable syntax\\\vspace{3mm}
+
+\textbf{Project}: Write a compiler to convert AsciiMath text into \LaTeX{}
+\end{frame}
+
+\subsection{Examples}
+\begin{frame}
+\frametitle{AsciiMath Syntax -- Simple Example}
+\end{frame}
+
+\begin{frame}
+\frametitle{AsciiMath Syntax -- Complex Example}
+\begin{block}{AsciiMath}
+\texttt{a/b -= alpha\_(d in RR)\^{}42 \~{}= qz sqrt5}
+\end{block}
+
+\begin{block}{\LaTeX{}}
+\texttt{\textbackslash frac\{a\}\{b\} \textbackslash{}equiv \textbackslash{}alpha\_\{d \textbackslash{}in \textbackslash{}mathbb\{R\}\}\^{}\{42\} \textbackslash{}cong qz \textbackslash{}sqrt\{5\}}
+\end{block}
+a/b -= alpha_(d in RR)^42 ~= qz sqrt5
+\vspace{4mm}
+\textbf{Output}: $a + b < c$
+
+\end{frame}
+
+% =================== Section =================== 
+\section{Implementation}
+\subsection{Overview}
+\subsection{Source Code Example}
+
+% =================== Section =================== 
+\section{Demonstration}
+\subsection{Demonstration}
+\begin{frame}
+\frametitle{Demonstration}
+\begin{center}
+\emph{Demonstration of AsciiMath to \LaTeX}
+\end{center}
+\end{frame}
+\end{document}

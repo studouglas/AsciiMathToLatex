@@ -24,6 +24,11 @@ xcuserdata/
 *.xcscmblueprint
 
 # Latex
+*.out
 *.log
 *.aux
+*.toc
+*.nav
+*.snm
+*.synctex.gz
 *.toc
